@@ -21,8 +21,10 @@ import id.ac.itb.if2010.model.Item;
 import id.ac.itb.if2010.model.KitchenUtensil;
 import id.ac.itb.if2010.model.Oven;
 import id.ac.itb.if2010.model.Plate;
+import id.ac.itb.if2010.model.PlateStorage;
 import id.ac.itb.if2010.model.Station;
 import id.ac.itb.if2010.model.TrashStation;
+import id.ac.itb.if2010.model.WashingStation;
 
 public class GamePanel extends JPanel {
     private GameMap map;
@@ -131,6 +133,34 @@ public class GamePanel extends JPanel {
                 g.setColor(Color.WHITE);
                 g.drawString("TRASH", screenX + 10, screenY + 35);
             }
+            else if (station instanceof PlateStorage) {
+                g.setColor(Color.DARK_GRAY);
+                g.fillRect(screenX+2, screenY+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.setColor(Color.WHITE);
+                g.drawString("PLATES", screenX+5, screenY+20);
+                g.drawString(((PlateStorage)station).getStatus(), screenX+5, screenY+40);
+            }
+            
+            else if (station instanceof WashingStation) {
+                g.setColor(Color.CYAN); // Water color
+                g.fillRect(screenX+2, screenY+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.setColor(Color.BLACK);
+                g.drawString("SINK", screenX+15, screenY+20);
+                
+                WashingStation sink = (WashingStation) station;
+                if (sink.hasPlates()) {
+                     g.setColor(Color.WHITE);
+                     g.fillOval(screenX+20, screenY+30, 20, 20); 
+                }
+            }
+            
+            else if (station instanceof TrashStation) {
+                g.setColor(Color.BLACK);
+                g.fillRect(screenX+2, screenY+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.setColor(Color.WHITE);
+                g.drawString("TRASH", screenX+10, screenY+35);
+            }
+
         }
     }
 

@@ -8,7 +8,7 @@ public class Dish extends Item {
 
     public Dish(String name, Position position, List<Preparable> components) {
         super(name, position);
-        this.components = new ArrayList<>(components); // Copy the list
+        this.components = new ArrayList<>(components); 
     }
 
     public List<Preparable> getComponents() {

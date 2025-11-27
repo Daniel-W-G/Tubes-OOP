@@ -10,16 +10,13 @@ public class CuttingStation extends Station {
     public void interact(ChefPlayer chef) {
         Item item = chef.getInventory();
 
-        // 1. Check if Chef has an item
         if (item != null) {
-            // 2. Check if the item is an Ingredient (something we can chop)
             if (item instanceof Ingredient) {
                 Ingredient ingredient = (Ingredient) item;
                 
-                // 3. Check if it is RAW
                 if (ingredient.canBeChopped()) {
                     System.out.println("Chopping " + ingredient.getName() + "...");
-                    ingredient.chop(); // This changes state to CHOPPED
+                    ingredient.chop(); 
                 } else {
                     System.out.println("Cannot chop " + ingredient.getName() + " (It might already be chopped/cooked).");
                 }
