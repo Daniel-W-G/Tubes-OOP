@@ -2,13 +2,20 @@ package id.ac.itb.if2010.model;
 
 public class PlateStorage extends Station {
     private int cleanPlateCount;
+    private int dirtyPlateCount; 
 
     public PlateStorage(Position position) {
         super("Plate Storage", position);
         this.cleanPlateCount = 5; 
+        this.dirtyPlateCount = 0;
     }
     
+    public void addDirtyPlate() {
+        this.dirtyPlateCount++;
+    }
+
     public String getStatus() {
+        if (dirtyPlateCount > 0) return "DIRTY x" + dirtyPlateCount;
         return "CLEAN x" + cleanPlateCount;
     }
 
@@ -27,25 +34,37 @@ public class PlateStorage extends Station {
 
                 if (p.isClean()) {
                     cleanPlateCount++;
-                    System.out.println("Returned clean plate to storage. (Total: " + cleanPlateCount + ")");
+                    System.out.println("Returned clean plate. (Total: " + cleanPlateCount + ")");
                     chef.setInventory(null);
                 } else {
-                    System.out.println("Can't put dirty plates here! Put them on a table.");
+                    System.out.println("Don't put dirty plates here manually. Put them in the Sink!");
                 }
             } else {
-                System.out.println("You can only store Plates here.");
+                System.out.println("Only Plates belong here.");
             }
             return;
         }
 
-        if (cleanPlateCount > 0) {
+        
+        if (dirtyPlateCount > 0) {
+            Plate dirtyStack = new Plate(chef.getPosition());
+            dirtyStack.setClean(false);
+            dirtyStack.setStackSize(dirtyPlateCount);
+            
+            chef.setInventory(dirtyStack);
+            System.out.println("Took " + dirtyPlateCount + " dirty plates.");
+            
+            dirtyPlateCount = 0; 
+        } 
+        else if (cleanPlateCount > 0) {
             Plate cleanPlate = new Plate(chef.getPosition());
             chef.setInventory(cleanPlate);
             System.out.println("Took 1 clean plate. (" + (cleanPlateCount - 1) + " left)");
+            
             cleanPlateCount--;
         } 
         else {
-            System.out.println("Storage is empty! Wash some plates!");
+            System.out.println("Storage is empty!");
         }
     }
 }

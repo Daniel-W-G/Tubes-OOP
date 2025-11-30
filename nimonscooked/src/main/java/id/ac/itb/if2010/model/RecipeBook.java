@@ -18,7 +18,7 @@ public class RecipeBook {
         burger.addRequirement("Meat", IngredientState.COOKED);
         burger.addRequirement("Cheese", IngredientState.CHOPPED);
         recipes.add(burger);
-
+        
         Recipe pizza = new Recipe("Pizza");
         pizza.addRequirement("Dough", IngredientState.COOKED);
         pizza.addRequirement("Tomato", IngredientState.COOKED);
@@ -30,10 +30,10 @@ public class RecipeBook {
         return recipes;
     }
 
-    public static Dish createDishIfValid(List<Preparable> ingredients, Position pos) {
+    public static String validateDish(List<Preparable> ingredients) {
         for (Recipe r : recipes) {
             if (r.isMatch(ingredients)) {
-                return new Dish(r.getName(), pos, ingredients);
+                return r.getName();
             }
         }
         return null;

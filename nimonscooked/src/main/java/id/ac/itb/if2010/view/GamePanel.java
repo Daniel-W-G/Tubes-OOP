@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.lang.reflect.Field;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -16,12 +17,16 @@ import id.ac.itb.if2010.model.CookingStation;
 import id.ac.itb.if2010.model.CuttingStation;
 import id.ac.itb.if2010.model.FryingPan;
 import id.ac.itb.if2010.model.GameMap;
+import id.ac.itb.if2010.model.Ingredient;
+import id.ac.itb.if2010.model.IngredientState;
 import id.ac.itb.if2010.model.IngredientStorage;
 import id.ac.itb.if2010.model.Item;
 import id.ac.itb.if2010.model.KitchenUtensil;
+import id.ac.itb.if2010.model.Order;
 import id.ac.itb.if2010.model.Oven;
 import id.ac.itb.if2010.model.Plate;
 import id.ac.itb.if2010.model.PlateStorage;
+import id.ac.itb.if2010.model.ServingCounter;
 import id.ac.itb.if2010.model.Station;
 import id.ac.itb.if2010.model.TrashStation;
 import id.ac.itb.if2010.model.WashingStation;
@@ -29,41 +34,50 @@ import id.ac.itb.if2010.model.WashingStation;
 public class GamePanel extends JPanel {
     private GameMap map;
     private final int TILE_SIZE = 64;
+    private int activeChefIndex = 0;
 
     public GamePanel(GameMap map) {
         this.map = map;
-        this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE));
+        this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 100)); 
         this.setBackground(Color.BLACK);
+    }
+    
+    public void setActiveChefIndex(int index) {
+        this.activeChefIndex = index;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
         for (int y = 0; y < map.getRows(); y++) {
             for (int x = 0; x < map.getCols(); x++) {
                 drawTile(g, x, y);
             }
         }
-        for (ChefPlayer chef : map.getChefs()) {
-            drawChef(g, chef);
+        
+        List<ChefPlayer> chefs = map.getChefs();
+        for (int i = 0; i < chefs.size(); i++) {
+            drawChef(g, chefs.get(i), i == activeChefIndex);
         }
+
+        drawUI(g);
     }
 
     private void drawTile(Graphics g, int x, int y) {
-        int screenX = x * TILE_SIZE;
-        int screenY = y * TILE_SIZE;
+        int sx = x * TILE_SIZE;
+        int sy = y * TILE_SIZE + 50; 
 
-        // Floor
         g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+        g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
         g.setColor(Color.WHITE);
-        g.drawRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+        g.drawRect(sx, sy, TILE_SIZE, TILE_SIZE);
 
         Station station = map.getStationAt(x, y);
         if (station != null) {
             if (station instanceof IngredientStorage) {
                 g.setColor(new Color(139, 69, 19)); 
-                g.fillRect(screenX + 2, screenY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.WHITE);
                 g.setFont(new Font("Arial", Font.BOLD, 10));
                 
@@ -73,105 +87,146 @@ public class GamePanel extends JPanel {
                     f.setAccessible(true);
                     label = (String) f.get(station);
                 } catch (Exception e) { }
+                g.drawString(label.toUpperCase(), sx+5, sy+35);
                 
-                g.drawString(label.toUpperCase(), screenX + 5, screenY + 35);
+                if (((IngredientStorage)station).getItemOnTop() != null) {
+                    drawItem(g, ((IngredientStorage)station).getItemOnTop(), sx+15, sy+10);
+                }
             }
+            
             else if (station instanceof CookingStation) {
                 CookingStation cs = (CookingStation) station;
                 CookingDevice device = cs.getDevice();
                 
                 g.setColor(Color.GRAY); 
-                g.fillRect(screenX + 2, screenY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 
                 if (device != null) {
                     if (device instanceof Oven) {
                         g.setColor(Color.BLACK);
-                        g.fillRect(screenX + 10, screenY + 10, 44, 44);
+                        g.fillRect(sx+10, sy+10, 44, 44);
                         g.setColor(Color.ORANGE);
-                        g.drawString("OVEN", screenX + 15, screenY + 35);
+                        g.drawString("OVEN", sx+15, sy+35);
                     } 
                     else if (device instanceof BoilingPot) {
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(screenX + 10, screenY + 10, 44, 44);
+                        g.fillOval(sx+10, sy+10, 44, 44);
                         g.setColor(Color.CYAN);
-                        g.drawString("POT", screenX + 20, screenY + 35);
+                        g.drawString("POT", sx+20, sy+35);
                     }
                     else if (device instanceof FryingPan) {
                         g.setColor(Color.BLACK);
-                        g.fillOval(screenX + 10, screenY + 10, 44, 44);
+                        g.fillOval(sx+10, sy+10, 44, 44);
                         g.setColor(Color.WHITE);
-                        g.drawString("PAN", screenX + 20, screenY + 35);
+                        g.drawString("PAN", sx+20, sy+35);
                     }
                     
                     if (device.isCooking()) {
-                        g.setColor(Color.YELLOW);
-                        g.drawString("♨", screenX + 45, screenY + 20);
+                        drawProgressBar(g, sx, sy, device.getProgress(), 24);
                     }
                 } else {
                     g.setColor(Color.RED); 
-                    g.drawOval(screenX + 15, screenY + 15, 34, 34);
+                    g.drawOval(sx+15, sy+15, 34, 34);
                 }
             }
+            
             else if (station instanceof CuttingStation) {
                 g.setColor(new Color(210, 180, 140)); 
-                g.fillRect(screenX + 2, screenY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.BLACK);
-                g.drawString("CUT", screenX + 20, screenY + 35);
-            }
-            else if (station instanceof AssemblyStation) {
-                g.setColor(new Color(222, 184, 135)); 
-                g.fillRect(screenX + 2, screenY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                g.drawString("CUT", sx+20, sy+35);
                 
-                AssemblyStation table = (AssemblyStation) station;
-                if (table.getItem() != null) {
-                    drawItem(g, table.getItem(), screenX + 15, screenY + 15);
+                CuttingStation cut = (CuttingStation) station;
+                
+                if (cut.getCurrentItem() != null) {
+                    drawItem(g, cut.getCurrentItem(), sx+15, sy+15);
+                }
+                
+                if (cut.getProgress() > 0) {
+                    drawProgressBar(g, sx, sy, cut.getProgress(), 100);
                 }
             }
-            else if (station instanceof TrashStation) {
+            
+            else if (station instanceof AssemblyStation) {
+                g.setColor(new Color(222, 184, 135)); 
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.BLACK);
-                g.fillRect(screenX + 2, screenY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-                g.setColor(Color.WHITE);
-                g.drawString("TRASH", screenX + 10, screenY + 35);
+                g.drawString("TABLE", sx+10, sy+20);
+                
+                if (((AssemblyStation)station).getItem() != null) {
+                    drawItem(g, ((AssemblyStation)station).getItem(), sx+15, sy+25);
+                }
             }
             else if (station instanceof PlateStorage) {
                 g.setColor(Color.DARK_GRAY);
-                g.fillRect(screenX+2, screenY+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.WHITE);
-                g.drawString("PLATES", screenX+5, screenY+20);
-                g.drawString(((PlateStorage)station).getStatus(), screenX+5, screenY+40);
+                g.drawString("PLATES", sx+5, sy+20);
+                g.drawString(((PlateStorage)station).getStatus(), sx+5, sy+40);
             }
-            
             else if (station instanceof WashingStation) {
-                g.setColor(Color.CYAN); // Water color
-                g.fillRect(screenX+2, screenY+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.setColor(Color.CYAN); 
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.BLACK);
-                g.drawString("SINK", screenX+15, screenY+20);
-                
+                g.drawString("SINK", sx+15, sy+20);
                 WashingStation sink = (WashingStation) station;
                 if (sink.hasPlates()) {
                      g.setColor(Color.WHITE);
-                     g.fillOval(screenX+20, screenY+30, 20, 20); 
+                     g.fillOval(sx+20, sy+30, 20, 20);
+                }
+                if (sink.getProgress() > 0) {
+                    drawProgressBar(g, sx, sy, sink.getProgress(), 100);
                 }
             }
-            
             else if (station instanceof TrashStation) {
                 g.setColor(Color.BLACK);
-                g.fillRect(screenX+2, screenY+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.WHITE);
-                g.drawString("TRASH", screenX+10, screenY+35);
+                g.drawString("TRASH", sx+10, sy+35);
             }
-
+            else if (station instanceof ServingCounter) {
+                g.setColor(Color.MAGENTA);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                g.setColor(Color.WHITE);
+                g.drawString("SERVE", sx+10, sy+35);
+            }
+            else {
+                g.setColor(Color.DARK_GRAY);
+                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+            }
         }
     }
 
-    private void drawChef(Graphics g, ChefPlayer chef) {
-        int x = chef.getPosition().getX() * TILE_SIZE;
-        int y = chef.getPosition().getY() * TILE_SIZE;
-
-        g.setColor(Color.BLUE);
-        g.fillOval(x + 10, y + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+    private void drawProgressBar(Graphics g, int x, int y, int current, int max) {
         g.setColor(Color.WHITE);
-        g.drawString(chef.getDirection().toString().substring(0,1), x+28, y+35); 
+        g.fillRect(x + 5, y - 5, 54, 8);
+        float pct = (float) current / max;
+        if (pct > 1.0f) pct = 1.0f;
+        if (max == 24 && current > 12) g.setColor(Color.RED); 
+        else g.setColor(Color.GREEN);
+        g.fillRect(x + 5, y - 5, (int)(54 * pct), 8);
+        g.setColor(Color.BLACK);
+        g.drawRect(x + 5, y - 5, 54, 8);
+    }
+
+    private void drawChef(Graphics g, ChefPlayer chef, boolean isActive) {
+        int x = chef.getPosition().getX() * TILE_SIZE;
+        int y = chef.getPosition().getY() * TILE_SIZE + 50;
+
+        if (isActive) {
+            g.setColor(Color.YELLOW);
+            int[] xPoints = {x + 32, x + 22, x + 42};
+            int[] yPoints = {y - 5, y - 15, y - 15};
+            g.fillPolygon(xPoints, yPoints, 3);
+        }
+
+        g.setColor(isActive ? Color.BLUE : Color.GRAY); 
+        g.fillOval(x + 10, y + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+        
+        if (chef.isBusy()) {
+            g.setColor(Color.RED);
+            g.drawOval(x + 8, y + 8, TILE_SIZE - 16, TILE_SIZE - 16);
+        }
 
         if (chef.getInventory() != null) {
             drawItem(g, chef.getInventory(), x + 30, y - 10);
@@ -180,23 +235,62 @@ public class GamePanel extends JPanel {
 
     private void drawItem(Graphics g, Item item, int x, int y) {
         g.setColor(Color.WHITE);
-        g.fillOval(x, y, 30, 30); 
+        g.fillOval(x, y, 30, 30);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 9));
         
         String label = item.getName();
         if (item instanceof Plate) {
             Plate p = (Plate) item;
-            if (p.getPlatedDish() != null) label = "DISH"; 
-            else if (!p.getContents().isEmpty()) label = "MIX"; 
+            if (!p.isClean()) label = "DIRT(" + p.getStackSize() + ")";
+            else if (!p.getContents().isEmpty()) label = "MIX";
             else label = "PLATE";
         }
         else if (item instanceof KitchenUtensil) {
             KitchenUtensil k = (KitchenUtensil) item;
             if (!k.getContents().isEmpty()) label = "FULL";
-            else label = item.getName().substring(0, 3);
+            else label = item.getName().length() > 3 ? item.getName().substring(0,3) : item.getName();
+        }
+        else if (item instanceof Ingredient) {
+            Ingredient ing = (Ingredient) item;
+            if (ing.getState() == IngredientState.CHOPPED) label = "CHOP";
+            else if (ing.getState() == IngredientState.COOKED) label = "COOK";
+            else label = item.getName().length() > 4 ? item.getName().substring(0,4) : item.getName();
+        }
+        else {
+             label = item.getName().length() > 4 ? item.getName().substring(0,4) : item.getName();
         }
         
-        g.drawString(label.length() > 4 ? label.substring(0,4) : label, x + 2, y + 20);
+        g.drawString(label, x + 2, y + 20);
+    }
+
+    private void drawUI(Graphics g) {
+        g.setColor(new Color(50, 50, 50));
+        g.fillRect(0, 0, getWidth(), 50);
+        
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        if (map.getOrderManager() != null) {
+            int score = map.getOrderManager().getScore();
+            g.drawString("Score: " + score, 20, 30);
+            
+            int xPos = 150;
+            for (Order o : map.getOrderManager().getActiveOrders()) {
+                g.setColor(new Color(255, 255, 200)); 
+                g.fillRect(xPos, 5, 100, 40);
+                
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Arial", Font.PLAIN, 12));
+                g.drawString(o.getRecipeName(), xPos + 5, 20);
+                
+                g.setColor(Color.GRAY);
+                g.fillRect(xPos + 5, 25, 90, 5);
+                g.setColor(Color.GREEN);
+                int barWidth = (int) (90 * ((double)o.getTimeLeft() / o.getMaxTime()));
+                g.fillRect(xPos + 5, 25, barWidth, 5);
+                
+                xPos += 110;
+            }
+        }
     }
 }

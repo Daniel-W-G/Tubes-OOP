@@ -1,10 +1,7 @@
 package id.ac.itb.if2010.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class AssemblyStation extends Station {
-    private Item itemOnTable;
+    protected Item itemOnTable;
 
     public AssemblyStation(Position position) {
         super("Assembly Table", position);
@@ -12,9 +9,15 @@ public class AssemblyStation extends Station {
     }
     
     public Item getItem() { return itemOnTable; }
+    
+    public void setItem(Item item) {
+        this.itemOnTable = item;
+    }
 
     @Override
     public void interact(ChefPlayer chef) {
+        if (chef.isBusy()) return;
+
         Item handItem = chef.getInventory();
 
         if (itemOnTable == null) {
@@ -26,71 +29,67 @@ public class AssemblyStation extends Station {
                 System.out.println("Nothing to place here.");
             }
         }
+        
         else {
             if (handItem == null) {
                 chef.setInventory(itemOnTable);
                 itemOnTable = null;
-                System.out.println("Picked up item from table.");
+                System.out.println("Picked up " + chef.getInventory().getName());
             } 
             
             else if (handItem instanceof Plate && itemOnTable instanceof Plate) {
                 Plate handPlate = (Plate) handItem;
                 Plate tablePlate = (Plate) itemOnTable;
-
                 if (!handPlate.isClean() && !tablePlate.isClean()) {
-                    int combinedSize = tablePlate.getStackSize() + handPlate.getStackSize();
-                    tablePlate.setStackSize(combinedSize);
-                    
-                    chef.setInventory(null); 
-                    System.out.println("Stacked dirty plates. Table now has: " + combinedSize);
-                }
-                else if (handItem instanceof Preparable && tablePlate.isClean()) {
-                     if (tablePlate.canAccept((Preparable) handItem)) {
-                        tablePlate.addIngredient((Preparable) handItem);
-                        chef.setInventory(null);
-                     }
-                }
-                else {
-                    System.out.println("Can't stack those!");
+                    int combined = tablePlate.getStackSize() + handPlate.getStackSize();
+                    tablePlate.setStackSize(combined);
+                    chef.setInventory(null);
+                    System.out.println("Stacked dirty plates. Total: " + combined);
+                } else {
+                    System.out.println("Can't stack clean/dirty mix!");
                 }
             }
+            
+            else if (handItem instanceof Plate && itemOnTable instanceof Preparable) {
+                Plate plate = (Plate) handItem;
+                if (plate.canAccept((Preparable) itemOnTable)) {
+                    plate.addIngredient((Preparable) itemOnTable);
+                    itemOnTable = null; 
+                } else {
+                    System.out.println("Plate can't accept that.");
+                }
+            }
+            
             
             else if (handItem instanceof Preparable && itemOnTable instanceof Plate) {
                 Plate plate = (Plate) itemOnTable;
                 if (plate.canAccept((Preparable) handItem)) {
                     plate.addIngredient((Preparable) handItem);
-                    chef.setInventory(null);
+                    chef.setInventory(null); 
                 } else {
-                    System.out.println("Cannot place that on this plate!");
+                    System.out.println("Plate can't accept that.");
                 }
             }
+            
             else if (handItem instanceof KitchenUtensil && itemOnTable instanceof Plate) {
                 KitchenUtensil utensil = (KitchenUtensil) handItem;
                 Plate plate = (Plate) itemOnTable;
-                
-                List<Preparable> itemsToMove = new ArrayList<>();
-                for (Preparable food : utensil.getContents()) {
-                    if (plate.canAccept(food)) {
-                        itemsToMove.add(food);
-                    }
+                java.util.List<Preparable> moved = new java.util.ArrayList<>();
+                for (Preparable p : utensil.getContents()) {
+                    if (plate.canAccept(p)) moved.add(p);
                 }
                 
-                if (!itemsToMove.isEmpty()) {
-                    for (Preparable food : itemsToMove) {
-                        plate.addIngredient(food);
-                    }
-                    utensil.clearContents(); 
-                    System.out.println("Transferred food to Plate.");
+                if (!moved.isEmpty()) {
+                    for (Preparable p : moved) plate.addIngredient(p);
+                    utensil.clearContents();
+                    System.out.println("Poured food onto plate.");
                 } else {
-                    System.out.println("Nothing can go on this plate.");
+                    System.out.println("Nothing to pour or plate full.");
                 }
             }
-            else if (handItem instanceof Plate && itemOnTable instanceof Preparable) {
-                 Plate plate = (Plate) handItem;
-                 if (plate.canAccept((Preparable) itemOnTable)) {
-                     plate.addIngredient((Preparable) itemOnTable);
-                     itemOnTable = null;
-                 }
+            
+            else {
+                System.out.println("Can't merge these items!");
             }
         }
     }

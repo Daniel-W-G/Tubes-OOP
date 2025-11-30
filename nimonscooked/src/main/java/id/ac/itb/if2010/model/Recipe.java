@@ -17,12 +17,13 @@ public class Recipe {
         requirements.put(ingredientName, state);
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+
 
     public boolean isMatch(List<Preparable> components) {
+
         if (components.size() != requirements.size()) return false;
+
 
         Map<String, IngredientState> checklist = new HashMap<>(requirements);
 
@@ -30,7 +31,7 @@ public class Recipe {
             if (p instanceof Ingredient) {
                 Ingredient ing = (Ingredient) p;
                 String key = ing.getName();
-                
+
                 if (checklist.containsKey(key) && checklist.get(key) == ing.getState()) {
                     checklist.remove(key); 
                 } else {
@@ -40,6 +41,7 @@ public class Recipe {
                 return false; 
             }
         }
+
         return checklist.isEmpty();
     }
 }

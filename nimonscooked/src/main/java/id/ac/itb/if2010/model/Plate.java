@@ -2,14 +2,14 @@ package id.ac.itb.if2010.model;
 
 public class Plate extends KitchenUtensil {
     private boolean isClean;
-    private Dish platedDish; 
-    private int stackSize; 
+    private int stackSize;
+    private int washProgress; 
 
     public Plate(Position position) {
         super("Plate", position);
         this.isClean = true;
-        this.platedDish = null;
-        this.stackSize = 1; 
+        this.stackSize = 1;
+        this.washProgress = 0;
         this.spriteName = "plate_clean";
     }
 
@@ -18,53 +18,43 @@ public class Plate extends KitchenUtensil {
     public void setClean(boolean clean) { 
         this.isClean = clean; 
         this.spriteName = isClean ? "plate_clean" : "plate_dirty";
+        this.washProgress = 0; 
         if (isClean) { 
-            this.platedDish = null; 
             this.contents.clear(); 
             this.stackSize = 1; 
         }
+    }
+    
+    public int getWashProgress() { return washProgress; }
+    public void addWashProgress(int amount) {
+        this.washProgress += amount;
+        if (this.washProgress > 100) this.washProgress = 100;
     }
     
     public int getStackSize() { return stackSize; }
     public void setStackSize(int n) { this.stackSize = n; }
     public void addPlate() { this.stackSize++; }
 
-    public Dish getPlatedDish() { return platedDish; }
-
     @Override
-    public boolean hasItems() {
-        return !contents.isEmpty() || platedDish != null;
-    }
+    public boolean hasItems() { return !contents.isEmpty(); }
 
     @Override
     public void clearContents() {
-        if (this.platedDish != null) {
-            this.platedDish = null;
-            System.out.println("Dish trashed. The plate is now DIRTY.");
-            this.setClean(false); 
-        } else {
+        if (!contents.isEmpty()) {
             super.clearContents();
-            System.out.println("Ingredients cleared. Plate remains clean.");
+            this.setClean(false);
+            System.out.println("Plate is now DIRTY.");
         }
     }
 
     public boolean canAccept(Preparable ingredient) {
-        return isClean && platedDish == null && stackSize == 1;
+        return isClean && stackSize == 1;
     }
 
     public void addIngredient(Preparable ingredient) {
         if (canAccept(ingredient)) {
             this.contents.add(ingredient);
             System.out.println("Added " + ((Item)ingredient).getName() + " to Plate.");
-            
-            Dish result = RecipeBook.createDishIfValid(this.contents, this.position);
-            
-            if (result != null) {
-                this.platedDish = result;
-                this.contents.clear(); 
-                System.out.println("Wow! You created " + result.getName() + "!");
-                this.spriteName = result.getSpriteName(); 
-            }
         }
     }
 }
