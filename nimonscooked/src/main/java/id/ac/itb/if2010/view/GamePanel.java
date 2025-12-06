@@ -29,6 +29,7 @@ import id.ac.itb.if2010.model.PlateStorage;
 import id.ac.itb.if2010.model.ServingCounter;
 import id.ac.itb.if2010.model.Station;
 import id.ac.itb.if2010.model.TrashStation;
+import id.ac.itb.if2010.model.Wall;
 import id.ac.itb.if2010.model.WashingStation;
 
 public class GamePanel extends JPanel {
@@ -189,6 +190,12 @@ public class GamePanel extends JPanel {
                 g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.WHITE);
                 g.drawString("SERVE", sx+10, sy+35);
+            }
+            else if (station instanceof Wall) {
+                g.setColor(Color.BLACK);
+                g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
+                g.setColor(Color.WHITE);
+                g.drawString("WALL", sx+20, sy+35);
             }
             else {
                 g.setColor(Color.DARK_GRAY);

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameMap {
-    private int rows = 10;
-    private int cols = 14;
+    private final int rows = 10;
+    private final int cols = 14;
     private Station[][] grid;
     private List<ChefPlayer> chefs;
     private OrderManager orderManager;
@@ -23,6 +23,22 @@ public class GameMap {
 
     private void initializeUltimateMap() {
         System.out.println("Initializing Ultimate Test Kitchen...");
+
+
+        for (int i = 0; i < 10; i++) {
+            grid [0][i] = new Wall(new Position(i, 0));
+
+        }
+        for (int i = 0; i < 14; i++) {
+            grid [9][i] = new Wall(new Position(13, i));
+        }
+
+        grid [8][0] = new Wall(new Position(0, 8));
+        grid [8][9] = new Wall(new Position(9, 8));
+        grid [8][13] = new Wall(new Position(13, 8));
+
+        grid[7][3] = new Wall(new Position(3, 7));
+        grid[7][13] = new Wall(new Position(13, 7));
 
         grid[1][1] = new IngredientStorage(new Position(1, 1), "Rice");
         grid[1][2] = new IngredientStorage(new Position(2, 1), "Nori");
