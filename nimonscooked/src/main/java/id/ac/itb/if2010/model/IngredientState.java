@@ -1,8 +1,9 @@
 package id.ac.itb.if2010.model;
 
 public enum IngredientState {
-    RAW,
-    CHOPPED,
-    COOKED,
-    BURNED
+    RAW,        // Mentah
+    CHOPPED,    // Sudah dipotong
+    COOKING,    // Sedang dimasak 
+    COOKED,     // Sudah dimasak
+    BURNED      // Gosong
 }
