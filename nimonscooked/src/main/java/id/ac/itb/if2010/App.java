@@ -22,11 +22,11 @@ public class App {
 
     public static void main(String[] args) {
         GameMap map = new GameMap();
-        ChefPlayer chef1 = new ChefPlayer("Chef 1", new Position(6, 5));
+        ChefPlayer chef1 = new ChefPlayer("Chef 1", new Position(4, 3));
         chef1.setInventory(new Plate(chef1.getPosition()));
         map.addChef(chef1);
         
-        ChefPlayer chef2 = new ChefPlayer("Chef 2", new Position(8, 5));
+        ChefPlayer chef2 = new ChefPlayer("Chef 2", new Position(10, 3));
         map.addChef(chef2);
         
         JFrame window = new JFrame("Nimonscooked v2.0 - Multi Chef");

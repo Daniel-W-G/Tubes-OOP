@@ -32,53 +32,72 @@ public class GameMap {
         for (int i = 0; i < 14; i++) {
             grid [9][i] = new Wall(new Position(13, i));
         }
-
-        grid [8][0] = new Wall(new Position(0, 8));
-        grid [8][9] = new Wall(new Position(9, 8));
-        grid [8][13] = new Wall(new Position(13, 8));
-
+        grid[8][0] = new Wall(new Position(0, 8));
+        grid[8][9] = new Wall(new Position(9, 8));
+        grid[8][13] = new Wall(new Position(13, 8));
         grid[7][3] = new Wall(new Position(3, 7));
         grid[7][13] = new Wall(new Position(13, 7));
 
-        grid[1][1] = new IngredientStorage(new Position(1, 1), "Rice");
-        grid[1][2] = new IngredientStorage(new Position(2, 1), "Nori");
-        grid[1][3] = new IngredientStorage(new Position(3, 1), "Cucumber");
-        grid[1][4] = new IngredientStorage(new Position(4, 1), "Meat");
-        grid[1][5] = new IngredientStorage(new Position(5, 1), "Bun");
-        grid[1][6] = new IngredientStorage(new Position(6, 1), "Cheese");
-        grid[1][7] = new IngredientStorage(new Position(7, 1), "Dough");
-        grid[1][8] = new IngredientStorage(new Position(8, 1), "Tomato");
 
-        
 
-        CookingStation riceStove = new CookingStation(new Position(2, 3));
-        riceStove.setDevice(new BoilingPot(new Position(2, 3)));
-        grid[3][2] = riceStove;
-        
+        grid[3][13] = new IngredientStorage(new Position(13, 3), "Rice");
+        grid[4][13] = new IngredientStorage(new Position(13, 4), "Nori");
+        grid[3][0] = new IngredientStorage(new Position(0, 3), "Fish");
+        grid[4][0] = new IngredientStorage(new Position(0, 4), "Shrimp");
+        grid[5][0] = new IngredientStorage(new Position(0, 5), "Cucumber");
 
-        CookingStation meatStove = new CookingStation(new Position(4, 3));
-        meatStove.setDevice(new FryingPan(new Position(4, 3)));
-        grid[3][4] = meatStove;
-        
-
-        CookingStation ovenStation = new CookingStation(new Position(6, 3));
-        ovenStation.setDevice(new Oven(new Position(6, 3)));
-        grid[3][6] = ovenStation;
-        
-        grid[6][2] = new CuttingStation(new Position(2, 6));
-        grid[6][4] = new CuttingStation(new Position(4, 6));
-        
+        grid[0][9] = new AssemblyStation(new Position(9, 0));
+        grid[0][13] = new AssemblyStation(new Position(13, 0));
+        grid[1][0] = new AssemblyStation(new Position(0, 1));
+        grid[1][2] = new AssemblyStation(new Position(2, 1));
+        grid[1][4] = new AssemblyStation(new Position(4, 1));
+        grid[1][6] = new AssemblyStation(new Position(6, 1));
+        grid[1][13] = new AssemblyStation(new Position(13, 1));
+        grid[2][0] = new AssemblyStation(new Position(0, 2));
+        grid[2][6] = new AssemblyStation(new Position(6, 2));
+        grid[2][13] = new AssemblyStation(new Position(13, 2));
+        grid[3][6] = new AssemblyStation(new Position(6, 3));
+        grid[4][3] = new AssemblyStation(new Position(3, 4));
+        grid[4][6] = new AssemblyStation(new Position(6, 4));
+        grid[5][3] = new AssemblyStation(new Position(3, 5));
+        grid[5][6] = new AssemblyStation(new Position(6, 5));
+        grid[5][13] = new AssemblyStation(new Position(13, 5));
+        grid[6][3] = new AssemblyStation(new Position(6, 3));
         grid[6][6] = new AssemblyStation(new Position(6, 6));
-        grid[6][7] = new AssemblyStation(new Position(7, 6));
+        grid[6][13] = new AssemblyStation(new Position(6, 13));
+
         
-        PlateStorage plateStorage = new PlateStorage(new Position(10, 6));
-        grid[6][10] = plateStorage;
+        CookingStation riceStove = new CookingStation(new Position(10, 0));
+        riceStove.setDevice(new BoilingPot(new Position(10, 0)));
+        grid[0][10] = riceStove;
         
-        grid[6][11] = new WashingStation(new Position(11, 6));
+
+        CookingStation meatStove = new CookingStation(new Position(11, 0));
+        meatStove.setDevice(new FryingPan(new Position(11, 0)));
+        grid[0][11] = meatStove;
+
         
-        grid[4][12] = new ServingCounter(new Position(12, 4), orderManager, plateStorage);
+        CookingStation ovenStation = new CookingStation(new Position(12, 0));
+        ovenStation.setDevice(new Oven(new Position(12, 0)));
+        grid[0][12] = ovenStation;
         
-        grid[6][12] = new TrashStation(new Position(12, 6));
+
+        grid[1][1] = new CuttingStation(new Position(1, 1));
+        grid[1][3] = new CuttingStation(new Position(3, 1));
+        grid[1][5] = new CuttingStation(new Position(5, 1));
+        
+        
+        PlateStorage plateStorage = new PlateStorage(new Position(11, 7));
+        grid[7][11] = plateStorage;
+        
+        grid[7][9] = new WashingStation(new Position(9, 7));
+        grid[7][10] = new WashingStation(new Position(10, 7));
+        
+        grid[6][0] = new ServingCounter(new Position(0, 6), orderManager, plateStorage);
+        grid[7][0] = new ServingCounter(new Position(0, 7), orderManager, plateStorage);
+
+        
+        grid[7][6] = new TrashStation(new Position(6, 7));
     }
 
     public Station getStationAt(int x, int y) {
