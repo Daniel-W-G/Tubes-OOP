@@ -1,8 +1,13 @@
 package id.ac.itb.if2010.model;
 
 public enum ChefAction {
-    IDLE,
-    MOVING,
-    BUSY_CUTTING,
-    BUSY_WASHING
+    MOVE_UP,
+    MOVE_DOWN,
+    MOVE_LEFT,
+    MOVE_RIGHT,
+    INTERACT,
+    HOLD,
+    USE,
+    SERVE,
+    TRASH
 }
