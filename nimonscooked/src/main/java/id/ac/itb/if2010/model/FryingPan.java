@@ -2,14 +2,8 @@ package id.ac.itb.if2010.model;
 
 public class FryingPan extends KitchenUtensil implements CookingDevice {
     private boolean isCooking = false;
-    private int progress = 0; 
-    private boolean isBurned = false;
-    private Thread cookingThread;
-
-    @Override
-    public int getProgress() {
-        return progress;
-    }
+    private int progress = 0;
+    private boolean isBurned = false; 
 
     public FryingPan(Position position) {
         super("Frying Pan", position);
@@ -17,7 +11,6 @@ public class FryingPan extends KitchenUtensil implements CookingDevice {
 
     @Override public boolean isPortable() { return true; }
     @Override public int capacity() { return 1; }
-    @Override public boolean isCooking() { return isCooking; }
 
     @Override
     public boolean canAccept(Preparable ingredient) {
@@ -34,58 +27,54 @@ public class FryingPan extends KitchenUtensil implements CookingDevice {
 
     @Override
     public void startCooking() {
-        if (!contents.isEmpty() && !isBurned && !isCooking) {
+        if (!contents.isEmpty() && !isBurned) {
             this.isCooking = true;
-            System.out.println("Pan started sizzling! (Auto-cook started)");
-            
-            Runnable cookTask = () -> {
-                try {
-                    while (isCooking && !isBurned) {
-                        Thread.sleep(1000); 
-                        progress++;
-                        System.out.println("Frying Pan: " + progress + "s");
-
-                        if (progress == 12) {
-                            for (Preparable p : contents) p.cook();
-                            System.out.println("Frying Pan: Food is COOKED!");
-                        }
-                        if (progress >= 24) burnFood();
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("Frying Pan cooking stopped.");
+            // set state jadi COOKING untuk semua ingredient di dalam pan
+            for (Preparable p : contents) {
+                if (p instanceof Ingredient) {
+                    ((Ingredient) p).setCooking();
                 }
-            };
-            this.cookingThread = new Thread(cookTask);
-            this.cookingThread.start();
+            }
+            System.out.println("Pan started sizzling!");
         }
     }
+
+    @Override public boolean isCooking() { return isCooking; }
     
     @Override
-    public void stopCooking() {
+    public void processCooking() {
         if (isCooking) {
-            this.isCooking = false;
-            if (cookingThread != null && cookingThread.isAlive()) {
-                cookingThread.interrupt();
+            progress++;
+            
+            if (progress % 20 == 0) System.out.println("Frying... " + progress + "%");
+
+            if (progress == 100) {
+                for (Preparable p : contents) {
+                    p.cook(); 
+                }
+                System.out.println("Cooking Done! (Take it off now!)");
             }
-            System.out.println("Frying Pan removed from heat.");
+
+            if (progress >= 150) {
+                this.isBurned = true;
+                this.isCooking = false; 
+                
+                for (Preparable p : contents) {
+                    if (p instanceof Ingredient) {
+                        ((Ingredient) p).setState(IngredientState.BURNED);
+                    }
+                }
+                System.out.println("ALARM! Pan burned!");
+            }
         }
-    }
-    
-    private void burnFood() {
-        this.isBurned = true;
-        this.isCooking = false;
-        for (Preparable p : contents) {
-            if (p instanceof Ingredient) ((Ingredient) p).setState(IngredientState.BURNED);
-        }
-        System.out.println("Frying Pan BURNED!");
     }
 
     @Override
     public void clearContents() {
         super.clearContents();
-        stopCooking(); 
-        this.isBurned = false;
+        this.isCooking = false;
+        this.isBurned = false; 
         this.progress = 0;
-        System.out.println("Frying Pan cleaned");
+        System.out.println("Frying Pan emptied.");
     }
 }
