@@ -12,18 +12,24 @@ public class RecipeBook {
         kappaMaki.addRequirement("Rice", IngredientState.COOKED);
         kappaMaki.addRequirement("Cucumber", IngredientState.CHOPPED);
         recipes.add(kappaMaki);
-
-        Recipe burger = new Recipe("Burger");
-        burger.addRequirement("Bun", IngredientState.RAW);
-        burger.addRequirement("Meat", IngredientState.COOKED);
-        burger.addRequirement("Cheese", IngredientState.CHOPPED);
-        recipes.add(burger);
         
-        Recipe pizza = new Recipe("Pizza");
-        pizza.addRequirement("Dough", IngredientState.COOKED);
-        pizza.addRequirement("Tomato", IngredientState.COOKED);
-        pizza.addRequirement("Cheese", IngredientState.COOKED);
-        recipes.add(pizza);
+        Recipe sakanaMaki = new Recipe("Sakana Maki");
+        sakanaMaki.addRequirement("Nori", IngredientState.RAW);
+        sakanaMaki.addRequirement("Rice", IngredientState.COOKED);
+        sakanaMaki.addRequirement("Fish", IngredientState.RAW);
+        recipes.add(sakanaMaki);
+
+        Recipe ebiMaki = new Recipe("Ebi Maki");
+        ebiMaki.addRequirement("Nori", IngredientState.RAW);
+        ebiMaki.addRequirement("Rice", IngredientState.COOKED);
+        ebiMaki.addRequirement("Shrimp", IngredientState.COOKED);
+        recipes.add(ebiMaki);
+
+        Recipe fishcucumberRoll = new Recipe("Fish Cucumber Roll");
+        fishcucumberRoll.addRequirement("Nori", IngredientState.RAW);
+        fishcucumberRoll.addRequirement("Rice", IngredientState.COOKED);
+        fishcucumberRoll.addRequirement("Fish", IngredientState.RAW);
+        fishcucumberRoll.addRequirement("Cucumber", IngredientState.CHOPPED);
     }
 
     public static List<Recipe> getAllRecipes() {
