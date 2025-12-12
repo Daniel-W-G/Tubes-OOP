@@ -55,9 +55,10 @@ public class GamePanel extends JPanel {
             assetMap.put("Plate", loadImage("clean plate.png"));
             assetMap.put("Dirty Plate", loadImage("dirty plate.png"));
             
-            assetMap.put("Kappa Maki", loadImage("kappa.png"));
-            assetMap.put("Sakana Maki", loadImage("sakana.png"));
-            assetMap.put("Ebi Maki", loadImage("ebi maki.png"));
+            assetMap.put("Kappa Maki", loadImage("Kappa Maki.png"));
+            assetMap.put("Sakana Maki", loadImage("Sakana Maki.png"));
+            assetMap.put("Ebi Maki", loadImage("Ebi Maki.png"));
+            assetMap.put("Fish Cucumber Roll", loadImage("Fish Cucumber Roll.png"));
             
         } catch (Exception e) {
             System.out.println("Gagal load gambar: " + e.getMessage());
@@ -123,6 +124,9 @@ public class GamePanel extends JPanel {
         else if (dishName.equalsIgnoreCase("Ebi Maki")) {
             content = "<b>Ingredients:</b><br>- Nori (Raw)<br>- Rice (Cooked)<br>- Shrimp (Cooked)";
         } 
+        else if (dishName.equalsIgnoreCase("Fish Cucumber Roll")) {
+            content = "<b>Ingredients:</b><br>- Nori (Raw)<br>- Rice (Cooked)<br>- Cucumber (Chopped)<br>- Fish (Raw)";
+        }
         else {
             content = "Recipe not found.";
         }
@@ -226,6 +230,8 @@ public class GamePanel extends JPanel {
                 g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.WHITE);
                 g.drawString("PLATES", sx+5, sy+20);
+                g.drawString("Clean: " + ((PlateStorage)station).getCleanPlateCount(), sx+5, sy+35);
+                g.drawString("Dirty: " + ((PlateStorage)station).getDirtyPlateCount(), sx+5, sy+50);
             }
             else if (station instanceof WashingStation) {
                 g.setColor(Color.CYAN); 
@@ -295,6 +301,10 @@ public class GamePanel extends JPanel {
         if (item instanceof Plate) {
             Plate p = (Plate) item;
             if (!p.isClean()) key = "Dirty Plate";
+            else if (p.getContents().size() > 0) {
+                String dishName = RecipeBook.validateDish(p.getContents());
+                if (dishName != null) key = dishName;
+            }
             else key = "Plate";
         }
         else if (item instanceof Ingredient) {

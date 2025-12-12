@@ -6,7 +6,7 @@ public class PlateStorage extends Station {
 
     public PlateStorage(Position position) {
         super("Plate Storage", position);
-        this.cleanPlateCount = 5; 
+        this.cleanPlateCount = 4; 
         this.dirtyPlateCount = 0;
     }
     
@@ -14,9 +14,33 @@ public class PlateStorage extends Station {
         this.dirtyPlateCount++;
     }
 
+    public void addCleanPlate() {
+        this.cleanPlateCount++;
+    }
+
+    public void reduceCleanPlate() {
+        if (this.cleanPlateCount > 0) {
+            this.cleanPlateCount--;
+        }
+    }
+
+    public void reduceDirtyPlate() {
+        if (this.dirtyPlateCount > 0) {
+            this.dirtyPlateCount--;
+        }
+    }
+
     public String getStatus() {
         if (dirtyPlateCount > 0) return "DIRTY x" + dirtyPlateCount;
         return "CLEAN x" + cleanPlateCount;
+    }
+
+    public int getCleanPlateCount() {
+        return cleanPlateCount;
+    }
+
+    public int getDirtyPlateCount() {
+        return dirtyPlateCount;
     }
 
     @Override

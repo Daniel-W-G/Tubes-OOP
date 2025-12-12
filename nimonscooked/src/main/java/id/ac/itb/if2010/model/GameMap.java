@@ -67,19 +67,19 @@ public class GameMap {
         grid[6][13] = new AssemblyStation(new Position(6, 13));
 
         
-        CookingStation riceStove = new CookingStation(new Position(10, 0));
-        riceStove.setDevice(new BoilingPot(new Position(10, 0)));
-        grid[0][10] = riceStove;
+        CookingStation Stove1 = new CookingStation(new Position(10, 0));
+        Stove1.setDevice(new BoilingPot(new Position(10, 0)));
+        grid[0][10] = Stove1;
         
 
-        CookingStation meatStove = new CookingStation(new Position(11, 0));
-        meatStove.setDevice(new FryingPan(new Position(11, 0)));
-        grid[0][11] = meatStove;
+        CookingStation Stove2 = new CookingStation(new Position(11, 0));
+        Stove2.setDevice(new BoilingPot(new Position(11, 0)));
+        grid[0][11] = Stove2;
 
         
-        CookingStation ovenStation = new CookingStation(new Position(12, 0));
-        ovenStation.setDevice(new Oven(new Position(12, 0)));
-        grid[0][12] = ovenStation;
+        CookingStation Stove3 = new CookingStation(new Position(12, 0));
+        Stove3.setDevice(new FryingPan(new Position(12, 0)));
+        grid[0][12] = Stove3;
         
 
         grid[1][1] = new CuttingStation(new Position(1, 1));
@@ -90,14 +90,14 @@ public class GameMap {
         PlateStorage plateStorage = new PlateStorage(new Position(11, 7));
         grid[7][11] = plateStorage;
         
-        grid[7][9] = new WashingStation(new Position(9, 7));
-        grid[7][10] = new WashingStation(new Position(10, 7));
+        grid[7][9] = new WashingStation(new Position(9, 7), plateStorage);
+        grid[7][10] = new WashingStation(new Position(10, 7), plateStorage);
         
         grid[6][0] = new ServingCounter(new Position(0, 6), orderManager, plateStorage);
         grid[7][0] = new ServingCounter(new Position(0, 7), orderManager, plateStorage);
 
         
-        grid[7][6] = new TrashStation(new Position(6, 7));
+        grid[7][6] = new TrashStation(new Position(6, 7), plateStorage);
     }
 
     public Station getStationAt(int x, int y) {

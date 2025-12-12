@@ -30,11 +30,13 @@ public class ServingCounter extends Station {
             }
             boolean success = orderManager.deliverDish(dishName);
             
-            chef.setInventory(null); 
-            
+            plate.clearContents();
+            chef.setInventory(null);
+
             if (linkedStorage != null) {
                 linkedStorage.addDirtyPlate();
-                System.out.println("Served " + dishName + "! Plate returned to storage (Dirty).");
+                linkedStorage.reduceCleanPlate();
+                System.out.println("Served " + dishName + "! Plate returned to storage (Dirty)."); 
             }
             
         } else {

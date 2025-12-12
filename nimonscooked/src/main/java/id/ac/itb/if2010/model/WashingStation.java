@@ -6,13 +6,15 @@ public class WashingStation extends Station {
     private Stack<Plate> dirtyPlates;
     private int cleanPlatesReady;
     private Thread washThread;
+    private PlateStorage linkedStorage;
     
     private Plate currentWashingPlate;
 
-    public WashingStation(Position position) {
+    public WashingStation(Position position, PlateStorage storage) {
         super("Sink", position);
         this.dirtyPlates = new Stack<>();
         this.cleanPlatesReady = 0;
+        this.linkedStorage = storage;
     }
     
     public boolean hasPlates() { return !dirtyPlates.isEmpty() || cleanPlatesReady > 0; }
@@ -71,11 +73,14 @@ public class WashingStation extends Station {
                     currentWashingPlate.addWashProgress(4); 
                 }
                 dirtyPlates.pop(); 
-                cleanPlatesReady++; 
+                cleanPlatesReady++;
+                linkedStorage.addCleanPlate();
+                linkedStorage.reduceDirtyPlate();
                 chef.setBusy(ChefAction.IDLE, null);
                 this.currentWashingPlate = null;
                 
                 System.out.println("Plate Cleaned!");
+                
                 
             } catch (InterruptedException e) {
                 System.out.println("Washing paused.");

@@ -30,6 +30,7 @@ public class RecipeBook {
         fishcucumberRoll.addRequirement("Rice", IngredientState.COOKED);
         fishcucumberRoll.addRequirement("Fish", IngredientState.RAW);
         fishcucumberRoll.addRequirement("Cucumber", IngredientState.CHOPPED);
+        recipes.add(fishcucumberRoll);
     }
 
     public static List<Recipe> getAllRecipes() {
