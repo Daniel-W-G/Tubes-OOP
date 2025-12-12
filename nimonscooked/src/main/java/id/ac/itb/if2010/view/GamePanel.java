@@ -1,13 +1,14 @@
 package id.ac.itb.if2010.view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import id.ac.itb.if2010.model.*;
@@ -18,7 +19,6 @@ public class GamePanel extends JPanel {
     private int activeChefIndex = 0;
     
     private int targetScore = 0;
-    private int timeLeft = 0;
     private boolean isPaused = false;
     
     private Rectangle pauseButtonRect = new Rectangle(0, 0, 0, 0); 
@@ -27,19 +27,52 @@ public class GamePanel extends JPanel {
     private Rectangle restartButtonRect = new Rectangle(0, 0, 0, 0);
     private Rectangle exitButtonRect = new Rectangle(0, 0, 0, 0);
 
+    private Map<String, BufferedImage> assetMap = new HashMap<>();
+
     public GamePanel(GameMap map) {
         this.map = map;
         this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 100)); 
         this.setBackground(Color.BLACK);
+        
+        loadAssets();
     }
     
-    public void setGameInfo(int target, int time) {
-        this.targetScore = target;
-        this.timeLeft = time;
+    private void loadAssets() {
+        try {
+            assetMap.put("Fish", loadImage("fish.png"));
+            assetMap.put("Rice", loadImage("rice.png"));
+            assetMap.put("Shrimp", loadImage("shrimp.png"));
+            assetMap.put("Nori", loadImage("nori.png"));
+            assetMap.put("Cucumber", loadImage("cucumber.png"));
+            
+            assetMap.put("Chopped Fish", loadImage("chopped fish.png"));
+            assetMap.put("Chopped Shrimp", loadImage("chopped shrimp.png"));
+            assetMap.put("Chopped Cucumber", loadImage("chopped cucumber.png"));
+            assetMap.put("Cooked Rice", loadImage("cooked rice.png"));
+            assetMap.put("Cooked Shrimp", loadImage("cooked shrimp.png"));
+            
+            assetMap.put("Plate", loadImage("clean plate.png"));
+            assetMap.put("Dirty Plate", loadImage("dirty plate.png"));
+            
+            assetMap.put("Kappa Maki", loadImage("kappa.png"));
+            assetMap.put("Sakana Maki", loadImage("sakana.png"));
+            assetMap.put("Ebi Maki", loadImage("ebi maki.png"));
+            
+        } catch (Exception e) {
+            System.out.println("Gagal load gambar: " + e.getMessage());
+        }
+    }
+    
+    private BufferedImage loadImage(String filename) {
+        try {
+            return ImageIO.read(getClass().getResourceAsStream("/assets/" + filename));
+        } catch (IOException | IllegalArgumentException e) {
+            return null;
+        }
     }
 
-    public void updateTimeLeft(int time) {
-        this.timeLeft = time;
+    public void setGameInfo(int target) {
+        this.targetScore = target;
     }
     
     public void setActiveChefIndex(int index) {
@@ -58,8 +91,56 @@ public class GamePanel extends JPanel {
             if (exitButtonRect.contains(mouseX, mouseY)) return "EXIT";
         } else {
             if (pauseButtonRect.contains(mouseX, mouseY)) return "PAUSE";
+            
+            if (map.getOrderManager() != null) {
+                int xPos = 220;
+                int orderBoxWidth = 110; 
+                int orderBoxHeight = 70;
+                
+                for (Order o : map.getOrderManager().getActiveOrders()) {
+                    Rectangle orderRect = new Rectangle(xPos, 5, orderBoxWidth, orderBoxHeight);
+                    if (orderRect.contains(mouseX, mouseY)) {
+                        showSingleRecipe(o.getRecipeName());
+                        return "RECIPE_VIEW";
+                    }
+                    xPos += orderBoxWidth + 10;
+                }
+            }
         }
         return "NONE";
+    }
+    
+    private void showSingleRecipe(String dishName) {
+        String content = "";
+        
+        if (dishName.equalsIgnoreCase("Kappa Maki")) {
+            content = "<b>Ingredients:</b><br>" +
+                      "- Nori (Raw)<br>" +
+                      "- Rice (Cooked)<br>" +
+                      "- Cucumber (Chopped)";
+        } 
+        else if (dishName.equalsIgnoreCase("Sakana Maki")) {
+            content = "<b>Ingredients:</b><br>" +
+                      "- Nori (Raw)<br>" +
+                      "- Rice (Cooked)<br>" +
+                      "- Fish (Raw)"; 
+        } 
+        else if (dishName.equalsIgnoreCase("Ebi Maki")) {
+            content = "<b>Ingredients:</b><br>" +
+                      "- Nori (Raw)<br>" +
+                      "- Rice (Cooked)<br>" +
+                      "- Shrimp (Cooked)";
+        } 
+        else {
+            content = "Recipe not found in database.";
+        }
+        
+        String message = "<html><h2>" + dishName + "</h2>" + content + "</html>";
+        
+        BufferedImage icon = assetMap.get(dishName);
+        javax.swing.ImageIcon swingIcon = (icon != null) ? new javax.swing.ImageIcon(icon) : null;
+        
+        JOptionPane.showMessageDialog(this, message, "Recipe Info", JOptionPane.INFORMATION_MESSAGE, swingIcon);
     }
 
     @Override
@@ -110,7 +191,7 @@ public class GamePanel extends JPanel {
                 g.drawString(label.toUpperCase(), sx+5, sy+35);
                 
                 if (((IngredientStorage)station).getItemOnTop() != null) {
-                    drawItem(g, ((IngredientStorage)station).getItemOnTop(), sx+15, sy+10);
+                    drawItem(g, ((IngredientStorage)station).getItemOnTop(), sx+10, sy+10, 44);
                 }
             }
             else if (station instanceof CookingStation) {
@@ -132,37 +213,39 @@ public class GamePanel extends JPanel {
                         g.setColor(Color.WHITE); g.drawString("PAN", sx+20, sy+35);
                     }
                     if (device.isCooking()) drawProgressBar(g, sx, sy, device.getProgress(), 24);
-                } else {
-                    g.setColor(Color.RED); g.drawOval(sx+15, sy+15, 34, 34);
                 }
             }
             else if (station instanceof CuttingStation) {
                 g.setColor(new Color(210, 180, 140)); 
                 g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.BLACK); g.drawString("CUT", sx+20, sy+35);
+                
                 CuttingStation cut = (CuttingStation) station;
-                if (cut.getCurrentItem() != null) drawItem(g, cut.getCurrentItem(), sx+15, sy+15);
+                if (cut.getCurrentItem() != null) drawItem(g, cut.getCurrentItem(), sx+10, sy+10, 44);
                 if (cut.getProgress() > 0) drawProgressBar(g, sx, sy, cut.getProgress(), 100);
             }
             else if (station instanceof AssemblyStation) {
                 g.setColor(new Color(222, 184, 135)); 
                 g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.BLACK); g.drawString("TABLE", sx+10, sy+20);
-                if (((AssemblyStation)station).getItem() != null) drawItem(g, ((AssemblyStation)station).getItem(), sx+15, sy+25);
+                if (((AssemblyStation)station).getItem() != null) drawItem(g, ((AssemblyStation)station).getItem(), sx+10, sy+10, 44);
             }
             else if (station instanceof PlateStorage) {
                 g.setColor(Color.DARK_GRAY);
                 g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.WHITE);
                 g.drawString("PLATES", sx+5, sy+20);
-                g.drawString(((PlateStorage)station).getStatus(), sx+5, sy+40);
             }
             else if (station instanceof WashingStation) {
                 g.setColor(Color.CYAN); 
                 g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
                 g.setColor(Color.BLACK); g.drawString("SINK", sx+15, sy+20);
                 WashingStation sink = (WashingStation) station;
-                if (sink.hasPlates()) { g.setColor(Color.WHITE); g.fillOval(sx+20, sy+30, 20, 20); }
+                if (sink.hasPlates()) { 
+                    BufferedImage img = assetMap.get("Dirty Plate");
+                    if (img != null) g.drawImage(img, sx+15, sy+15, 34, 34, null);
+                    else { g.setColor(Color.WHITE); g.fillOval(sx+20, sy+30, 20, 20); }
+                }
                 if (sink.getProgress() > 0) drawProgressBar(g, sx, sy, sink.getProgress(), 100);
             }
             else if (station instanceof TrashStation) {
@@ -198,45 +281,61 @@ public class GamePanel extends JPanel {
     private void drawChef(Graphics g, ChefPlayer chef, boolean isActive) {
         int x = chef.getPosition().getX() * TILE_SIZE;
         int y = chef.getPosition().getY() * TILE_SIZE + 50;
+        
         if (isActive) {
             g.setColor(Color.YELLOW);
             int[] xPoints = {x + 32, x + 22, x + 42}; int[] yPoints = {y - 5, y - 15, y - 15};
             g.fillPolygon(xPoints, yPoints, 3);
         }
+        
         g.setColor(isActive ? Color.BLUE : Color.GRAY); 
         g.fillOval(x + 10, y + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+        
         if (chef.isBusy()) { g.setColor(Color.RED); g.drawOval(x + 8, y + 8, TILE_SIZE - 16, TILE_SIZE - 16); }
-        if (chef.getInventory() != null) drawItem(g, chef.getInventory(), x + 30, y - 10);
+        
+        if (chef.getInventory() != null) {
+            drawItem(g, chef.getInventory(), x + 30, y + 30, 30);
+        }
     }
 
-    private void drawItem(Graphics g, Item item, int x, int y) {
-        g.setColor(Color.WHITE); g.fillOval(x, y, 30, 30);
-        g.setColor(Color.BLACK); g.setFont(new Font("Arial", Font.PLAIN, 9));
-        String label = item.getName();
+    private void drawItem(Graphics g, Item item, int x, int y, int size) {
+        String key = item.getName();
+        
         if (item instanceof Plate) {
             Plate p = (Plate) item;
-            if (!p.isClean()) label = "DIRT(" + p.getStackSize() + ")";
-            else if (!p.getContents().isEmpty()) label = "MIX";
-            else label = "PLATE";
-        }
-        else if (item instanceof KitchenUtensil) {
-            KitchenUtensil k = (KitchenUtensil) item;
-            if (!k.getContents().isEmpty()) label = "FULL";
-            else label = item.getName().length() > 3 ? item.getName().substring(0,3) : item.getName();
+            if (!p.isClean()) key = "Dirty Plate";
+            else key = "Plate";
         }
         else if (item instanceof Ingredient) {
             Ingredient ing = (Ingredient) item;
+<<<<<<< HEAD
             if (ing.getState() == IngredientState.CHOPPED) label = "CHOPED " + ing.getName();
             else if (ing.getState() == IngredientState.COOKED) label = "COOKED " + ing.getName();
             else label = item.getName().length() > 4 ? item.getName().substring(0,4) : item.getName();
+=======
+            key = ing.getName(); 
+            if (ing.getState() == IngredientState.CHOPPED) key = "Chopped " + key;
+            if (ing.getState() == IngredientState.COOKED) key = "Cooked " + key;
         }
-        else label = item.getName().length() > 4 ? item.getName().substring(0,4) : item.getName();
-        g.drawString(label, x + 2, y + 20);
+
+        BufferedImage img = assetMap.get(key);
+        
+        if (img != null) {
+            g.drawImage(img, x, y, size, size, null);
+        } else {
+            g.setColor(Color.WHITE); 
+            g.fillOval(x, y, size, size);
+            g.setColor(Color.BLACK); 
+            g.setFont(new Font("Arial", Font.PLAIN, 9));
+            String label = key.length() > 4 ? key.substring(0, 4) : key;
+            g.drawString(label, x + 2, y + size/2);
+>>>>>>> feat: add recipe pop up to order
+        }
     }
 
     private void drawUI(Graphics g) {
         g.setColor(new Color(50, 50, 50));
-        g.fillRect(0, 0, getWidth(), 60);
+        g.fillRect(0, 0, getWidth(), 80);
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
         
@@ -244,43 +343,63 @@ public class GamePanel extends JPanel {
             int currentScore = map.getOrderManager().getScore();
             g.drawString("Score: " + currentScore + " / " + targetScore, 20, 25);
             
-            int min = timeLeft / 60;
-            int sec = timeLeft % 60;
-            String timeStr = String.format("%02d:%02d", min, sec);
+            int failed = map.getOrderManager().getFailedOrders();
+            int lives = 5 - failed;
+            if (lives < 0) lives = 0;
             
-            if (timeLeft < 30) g.setColor(Color.RED); else g.setColor(Color.GREEN);
-            g.setFont(new Font("Arial", Font.BOLD, 24));
-            g.drawString(timeStr, 20, 50);
+            g.setFont(new Font("SansSerif", Font.PLAIN, 30)); 
+            int heartX = 20;
+            int heartY = 60;
+            
+            for (int i = 0; i < 5; i++) {
+                if (i < lives) {
+                    g.setColor(Color.RED); 
+                    g.drawString("❤", heartX, heartY); 
+                } else {
+                    g.setColor(Color.GRAY);
+                    g.drawString("❤", heartX, heartY); 
+                }
+                heartX += 35; 
+            }
 
             g.setColor(new Color(231, 76, 60)); 
             int btnW = 50; 
             int btnH = 40;
             int btnX = getWidth() - btnW - 20;
-            int btnY = 10;
+            int btnY = 15;
             g.fillRect(btnX, btnY, btnW, btnH);
-            
             pauseButtonRect.setBounds(btnX, btnY, btnW, btnH);
             
             g.setColor(Color.WHITE);
-            int barW = 6;
-            int barH = 20;
-            int gap = 6;
-            int centerX = btnX + (btnW - (barW*2 + gap)) / 2;
-            int centerY = btnY + (btnH - barH) / 2;
-            
-            g.fillRect(centerX, centerY, barW, barH);          
-            g.fillRect(centerX + barW + gap, centerY, barW, barH); 
+            g.fillRect(btnX + 15, btnY + 10, 6, 20);          
+            g.fillRect(btnX + 29, btnY + 10, 6, 20); 
 
-            int xPos = 200;
+            int xPos = 220; 
+            int orderBoxWidth = 110; 
+            int orderBoxHeight = 70; 
+            
             for (Order o : map.getOrderManager().getActiveOrders()) {
-                g.setColor(new Color(255, 255, 200)); g.fillRect(xPos, 10, 100, 40);
-                g.setColor(Color.BLACK); g.setFont(new Font("Arial", Font.PLAIN, 12));
-                g.drawString(o.getRecipeName(), xPos + 5, 25);
-                g.setColor(Color.GRAY); g.fillRect(xPos + 5, 35, 90, 5);
+                g.setColor(new Color(255, 255, 200)); 
+                g.fillRect(xPos, 5, orderBoxWidth, orderBoxHeight);
+                
+                BufferedImage icon = assetMap.get(o.getRecipeName());
+                if (icon != null) {
+                    g.drawImage(icon, xPos + (orderBoxWidth - 40)/2, 10, 40, 40, null);
+                }
+                
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Arial", Font.BOLD, 11));
+                String text = o.getRecipeName();
+                int textW = g.getFontMetrics().stringWidth(text);
+                g.drawString(text, xPos + (orderBoxWidth - textW)/2, 60);
+
+                g.setColor(Color.GRAY); 
+                g.fillRect(xPos, 70, orderBoxWidth, 5); 
                 g.setColor(Color.GREEN);
-                int barWidth = (int) (90 * ((double)o.getTimeLeft() / o.getMaxTime()));
-                g.fillRect(xPos + 5, 35, barWidth, 5);
-                xPos += 110;
+                int barWidth = (int) (orderBoxWidth * ((double)o.getTimeLeft() / o.getMaxTime()));
+                g.fillRect(xPos, 70, barWidth, 5); 
+                
+                xPos += orderBoxWidth + 10; 
             }
         }
     }
@@ -298,30 +417,36 @@ public class GamePanel extends JPanel {
         int btnW = 200;
         int btnH = 50;
         int btnX = (getWidth() - btnW) / 2;
+        int startY = getHeight() / 2 - 40;
         
-        int btnY1 = getHeight() / 2 - 40;
         g.setColor(new Color(255, 204, 0)); 
-        g.fillRect(btnX, btnY1, btnW, btnH);
-        resumeButtonRect.setBounds(btnX, btnY1, btnW, btnH);
-        
+        g.fillRect(btnX, startY, btnW, btnH);
+        resumeButtonRect.setBounds(btnX, startY, btnW, btnH);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("RESUME", btnX + 55, btnY1 + 32);
+        drawStringCentered(g, "RESUME", btnX, startY, btnW, btnH);
         
-        int btnY2 = btnY1 + 60;
+        int btnY2 = startY + 70;
         g.setColor(new Color(255, 204, 0)); 
         g.fillRect(btnX, btnY2, btnW, btnH);
         restartButtonRect.setBounds(btnX, btnY2, btnW, btnH);
         
         g.setColor(Color.BLACK);
-        g.drawString("RESTART", btnX + 55, btnY2 + 32);
+        drawStringCentered(g, "RESTART", btnX, btnY2, btnW, btnH);
 
-        int btnY3 = btnY2 + 60;
+        int btnY3 = btnY2 + 70;
         g.setColor(new Color(231, 76, 60)); 
         g.fillRect(btnX, btnY3, btnW, btnH);
         exitButtonRect.setBounds(btnX, btnY3, btnW, btnH);
         
         g.setColor(Color.WHITE);
-        g.drawString("EXIT MENU", btnX + 45, btnY3 + 32);
+        drawStringCentered(g, "EXIT GAME", btnX, btnY3, btnW, btnH);
+    }
+    
+    private void drawStringCentered(Graphics g, String text, int x, int y, int w, int h) {
+        FontMetrics fm = g.getFontMetrics();
+        int tx = x + (w - fm.stringWidth(text)) / 2;
+        int ty = y + (h - fm.getHeight()) / 2 + fm.getAscent();
+        g.drawString(text, tx, ty);
     }
 }

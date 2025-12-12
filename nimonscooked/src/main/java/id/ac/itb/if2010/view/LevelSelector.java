@@ -5,8 +5,6 @@ import java.awt.*;
 import id.ac.itb.if2010.App; 
 
 public class LevelSelector extends JFrame {
-    
-    private final int GAME_DURATION = 180; 
     private int selectedTargetScore = 0; 
     
     private JButton btnEasy, btnMedium, btnHard;
@@ -32,9 +30,9 @@ public class LevelSelector extends JFrame {
         lvlPanel.setLayout(new BoxLayout(lvlPanel, BoxLayout.Y_AXIS));
         lvlPanel.setOpaque(false); 
         
-        btnEasy = createOptionButton("<html><center><b>EASY</b><br>Target: 150</center></html>");
-        btnMedium = createOptionButton("<html><center><b>MEDIUM</b><br>Target: 250</center></html>");
-        btnHard = createOptionButton("<html><center><b>HARD</b><br>Target: 400</center></html>");
+        btnEasy = createOptionButton("<html><center><b>EASY</b><br>Target Score: 150</center></html>");
+        btnMedium = createOptionButton("<html><center><b>MEDIUM</b><br>Target Score: 250</center></html>");
+        btnHard = createOptionButton("<html><center><b>HARD</b><br>Target Score: 400</center></html>");
         
         btnEasy.addActionListener(e -> selectDifficulty(btnEasy, 150, new Color(46, 204, 113))); 
         btnMedium.addActionListener(e -> selectDifficulty(btnMedium, 250, new Color(243, 156, 18))); 
@@ -63,7 +61,7 @@ public class LevelSelector extends JFrame {
         btnStart.addActionListener(e -> {
             if (selectedTargetScore > 0) {
                 dispose();
-                App.startGame("SUSHI", selectedTargetScore, GAME_DURATION);
+                App.startGame("SUSHI", selectedTargetScore);
             }
         });
 
