@@ -21,8 +21,9 @@ public class GamePanel extends JPanel {
     private int targetScore = 0;
     private boolean isPaused = false;
     
-    private Rectangle pauseButtonRect = new Rectangle(0, 0, 0, 0); 
+    private final int MAP_OFFSET_Y = 85; 
     
+    private Rectangle pauseButtonRect = new Rectangle(0, 0, 0, 0); 
     private Rectangle resumeButtonRect = new Rectangle(0, 0, 0, 0);
     private Rectangle restartButtonRect = new Rectangle(0, 0, 0, 0);
     private Rectangle exitButtonRect = new Rectangle(0, 0, 0, 0);
@@ -31,7 +32,7 @@ public class GamePanel extends JPanel {
 
     public GamePanel(GameMap map) {
         this.map = map;
-        this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 100)); 
+        this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 120)); 
         this.setBackground(Color.BLACK);
         
         loadAssets();
@@ -114,29 +115,19 @@ public class GamePanel extends JPanel {
         String content = "";
         
         if (dishName.equalsIgnoreCase("Kappa Maki")) {
-            content = "<b>Ingredients:</b><br>" +
-                      "- Nori (Raw)<br>" +
-                      "- Rice (Cooked)<br>" +
-                      "- Cucumber (Chopped)";
+            content = "<b>Ingredients:</b><br>- Nori (Raw)<br>- Rice (Cooked)<br>- Cucumber (Chopped)";
         } 
         else if (dishName.equalsIgnoreCase("Sakana Maki")) {
-            content = "<b>Ingredients:</b><br>" +
-                      "- Nori (Raw)<br>" +
-                      "- Rice (Cooked)<br>" +
-                      "- Fish (Raw)"; 
+            content = "<b>Ingredients:</b><br>- Nori (Raw)<br>- Rice (Cooked)<br>- Fish (Raw)"; 
         } 
         else if (dishName.equalsIgnoreCase("Ebi Maki")) {
-            content = "<b>Ingredients:</b><br>" +
-                      "- Nori (Raw)<br>" +
-                      "- Rice (Cooked)<br>" +
-                      "- Shrimp (Cooked)";
+            content = "<b>Ingredients:</b><br>- Nori (Raw)<br>- Rice (Cooked)<br>- Shrimp (Cooked)";
         } 
         else {
-            content = "Recipe not found in database.";
+            content = "Recipe not found.";
         }
         
         String message = "<html><h2>" + dishName + "</h2>" + content + "</html>";
-        
         BufferedImage icon = assetMap.get(dishName);
         javax.swing.ImageIcon swingIcon = (icon != null) ? new javax.swing.ImageIcon(icon) : null;
         
@@ -167,7 +158,7 @@ public class GamePanel extends JPanel {
 
     private void drawTile(Graphics g, int x, int y) {
         int sx = x * TILE_SIZE;
-        int sy = y * TILE_SIZE + 50; 
+        int sy = y * TILE_SIZE + MAP_OFFSET_Y;
 
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
@@ -280,7 +271,7 @@ public class GamePanel extends JPanel {
 
     private void drawChef(Graphics g, ChefPlayer chef, boolean isActive) {
         int x = chef.getPosition().getX() * TILE_SIZE;
-        int y = chef.getPosition().getY() * TILE_SIZE + 50;
+        int y = chef.getPosition().getY() * TILE_SIZE + MAP_OFFSET_Y;
         
         if (isActive) {
             g.setColor(Color.YELLOW);
@@ -308,11 +299,6 @@ public class GamePanel extends JPanel {
         }
         else if (item instanceof Ingredient) {
             Ingredient ing = (Ingredient) item;
-<<<<<<< HEAD
-            if (ing.getState() == IngredientState.CHOPPED) label = "CHOPED " + ing.getName();
-            else if (ing.getState() == IngredientState.COOKED) label = "COOKED " + ing.getName();
-            else label = item.getName().length() > 4 ? item.getName().substring(0,4) : item.getName();
-=======
             key = ing.getName(); 
             if (ing.getState() == IngredientState.CHOPPED) key = "Chopped " + key;
             if (ing.getState() == IngredientState.COOKED) key = "Cooked " + key;
@@ -329,7 +315,6 @@ public class GamePanel extends JPanel {
             g.setFont(new Font("Arial", Font.PLAIN, 9));
             String label = key.length() > 4 ? key.substring(0, 4) : key;
             g.drawString(label, x + 2, y + size/2);
->>>>>>> feat: add recipe pop up to order
         }
     }
 

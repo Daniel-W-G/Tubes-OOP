@@ -21,14 +21,15 @@ public class App {
     private static int activeChefIndex = 0; 
     
     private static Timer gameTimer;
-    
     private static String lastMapType;
     private static int lastTargetScore;
 
     public static void startGame(String mapType, int targetScore) {
+        if (gameTimer != null && gameTimer.isRunning()) {
+            gameTimer.stop();
+        }
         if (window != null) {
             window.dispose(); 
-            if (gameTimer != null) gameTimer.stop();
         }
 
         lastMapType = mapType;
@@ -64,23 +65,15 @@ public class App {
             public void mouseClicked(MouseEvent e) {
                 String action = gamePanel.checkClick(e.getX(), e.getY());
                 
-                if (action.equals("PAUSE")) {
-                    togglePause(gamePanel);
-                } 
-                else if (action.equals("RESUME")) {
-                    if (isPaused) togglePause(gamePanel);
-                }
+                if (action.equals("PAUSE")) togglePause(gamePanel);
+                else if (action.equals("RESUME")) { if (isPaused) togglePause(gamePanel); }
                 else if (action.equals("RESTART")) {
                     if (isPaused) {
                         int confirm = JOptionPane.showConfirmDialog(window, "Restart Level?", "Restart", JOptionPane.YES_NO_OPTION);
-                        if(confirm == JOptionPane.YES_OPTION) {
-                            startGame(lastMapType, lastTargetScore);
-                        }
+                        if(confirm == JOptionPane.YES_OPTION) startGame(lastMapType, lastTargetScore);
                     }
                 }
-                else if (action.equals("EXIT")) {
-                    if (isPaused) exitToMenu();
-                }
+                else if (action.equals("EXIT")) { if (isPaused) exitToMenu(); }
             }
         });
 
@@ -160,9 +153,7 @@ public class App {
         });
 
         gameTimer = new Timer(50, e -> {
-            if (isGameOver || isPaused || window == null || !window.isVisible()) {
-                return;
-            }
+            if (isGameOver || isPaused || window == null) return;
 
             if (map.getOrderManager() != null) {
                 map.getOrderManager().tick();
@@ -172,23 +163,27 @@ public class App {
                 
                 if (failed >= 5) {
                     isGameOver = true;
+                    gameTimer.stop();
+                    
                     JOptionPane.showMessageDialog(window, 
                         "GAME OVER! Too many failed orders.\nFinal Score: " + score);
+                    
                     window.dispose();
-                    window = null; 
                     new MainMenu().setVisible(true);
                 }
                 else if (score >= targetScore) {
                     isGameOver = true;
+                    gameTimer.stop();
+                    
                     JOptionPane.showMessageDialog(window, 
                         "VICTORY! Target Score Reached!\nFinal Score: " + score);
+                    
                     window.dispose();
-                    window = null; 
                     new MainMenu().setVisible(true);
                 }
             }
             
-            gamePanel.repaint();
+            if (!isGameOver) gamePanel.repaint();
         });
         gameTimer.start();
         
@@ -207,7 +202,7 @@ public class App {
             JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {
-            window.setVisible(false); 
+            window.setVisible(false);
             new MainMenu().setVisible(true);
         }
     }
