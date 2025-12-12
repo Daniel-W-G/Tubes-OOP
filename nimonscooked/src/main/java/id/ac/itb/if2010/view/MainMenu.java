@@ -2,6 +2,7 @@ package id.ac.itb.if2010.view;
 
 import javax.swing.*;
 import java.awt.*;
+import id.ac.itb.if2010.App;
 
 public class MainMenu extends JFrame {
 
@@ -13,21 +14,34 @@ public class MainMenu extends JFrame {
         setLayout(new GridBagLayout());
 
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); 
-        panel.setBackground(new Color(240, 240, 240)); 
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(new Color(240, 240, 240));
 
-        JLabel titleLabel = new JLabel("NIMONSCOOKED");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 48));
+        JLabel titleLabel = new JLabel("SUSHIMATE");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 48)); 
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton btnStart = createStyledButton("Start Game");
+        
+        JButton btnResume = createStyledButton("Resume Game");
+        JButton btnStart = createStyledButton("New Game");
         JButton btnHowToPlay = createStyledButton("How to Play");
         JButton btnExit = createStyledButton("Exit");
-
         
+        if (App.hasActiveGame()) {
+            btnResume.setEnabled(true);
+            btnResume.setBackground(new Color(255, 255, 200)); 
+        } else {
+            btnResume.setEnabled(false);
+            btnResume.setForeground(Color.LIGHT_GRAY);
+        }
+
+        btnResume.addActionListener(e -> {
+            dispose();
+            App.resumeGame(); 
+        });
+
         btnStart.addActionListener(e -> {
-            dispose(); 
-            new LevelSelector().setVisible(true); 
+            dispose();
+            new LevelSelector().setVisible(true);
         });
 
         btnHowToPlay.addActionListener(e -> {
@@ -40,7 +54,10 @@ public class MainMenu extends JFrame {
 
         panel.add(Box.createVerticalStrut(50));
         panel.add(titleLabel);
-        panel.add(Box.createVerticalStrut(50));
+        panel.add(Box.createVerticalStrut(60)); 
+        
+        panel.add(btnResume);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(btnStart);
         panel.add(Box.createVerticalStrut(20));
         panel.add(btnHowToPlay);
@@ -58,8 +75,7 @@ public class MainMenu extends JFrame {
         button.setFocusPainted(false);
         button.setOpaque(true);
         button.setBorderPainted(false);
-        button.setBackground(Color.WHITE); 
-        
+        button.setBackground(Color.WHITE);
         return button;
     }
 
@@ -73,7 +89,7 @@ public class MainMenu extends JFrame {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JPanel grid = new JPanel(new GridLayout(0, 2, 10, 10));
+        JPanel grid = new JPanel(new GridLayout(0, 2, 10, 5));
         grid.setBackground(Color.WHITE);
         grid.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -97,9 +113,8 @@ public class MainMenu extends JFrame {
             "3. Place food on a Plate\n" +
             "4. Deliver to Serving Window before time runs out!"
         );
-
         missionText.setEditable(false);
-        missionText.setBackground(new Color(240, 240, 240)); 
+        missionText.setBackground(new Color(240, 240, 240));
         missionText.setFont(new Font("Arial", Font.PLAIN, 14));
         missionText.setMargin(new Insets(10, 10, 10, 10));
 
@@ -120,7 +135,7 @@ public class MainMenu extends JFrame {
         JLabel lblKey = new JLabel(key, SwingConstants.CENTER);
         lblKey.setFont(new Font("Monospaced", Font.BOLD, 16));
         lblKey.setOpaque(true);
-        lblKey.setBackground(new Color(220, 220, 220)); // Abu-abu mirip tombol keyboard
+        lblKey.setBackground(new Color(220, 220, 220));
         lblKey.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         
         JLabel lblDesc = new JLabel(desc);
