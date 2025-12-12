@@ -2,8 +2,7 @@ package id.ac.itb.if2010.view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
+import id.ac.itb.if2010.App;
 
 public class MainMenu extends JFrame {
 
@@ -18,24 +17,28 @@ public class MainMenu extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(240, 240, 240));
 
-        Font titleFont = loadCustomFont("PressStart2P-Regular.ttf", 48f);
-        if (titleFont == null) {
-            titleFont = new Font("Serif", Font.BOLD, 48);
-        }
-
-        JLabel titleLabel = new JLabel("NIMONSCOOKED");
-        titleLabel.setFont(titleFont);
+        JLabel titleLabel = new JLabel("SUSHIMATE");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 48)); 
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel subtitleLabel = new JLabel("Map A: Sushi");
-        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        subtitleLabel.setForeground(Color.GRAY);
-        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton btnStart = createStyledButton("Start Game");
+        JButton btnResume = createStyledButton("Resume Game");
+        JButton btnStart = createStyledButton("New Game");
         JButton btnHowToPlay = createStyledButton("How to Play");
         JButton btnExit = createStyledButton("Exit");
         
+        if (App.hasActiveGame()) {
+            btnResume.setEnabled(true);
+            btnResume.setBackground(new Color(255, 255, 200)); 
+        } else {
+            btnResume.setEnabled(false);
+            btnResume.setForeground(Color.LIGHT_GRAY);
+        }
+
+        btnResume.addActionListener(e -> {
+            dispose();
+            App.resumeGame(); 
+        });
+
         btnStart.addActionListener(e -> {
             dispose();
             new LevelSelector().setVisible(true);
@@ -51,8 +54,10 @@ public class MainMenu extends JFrame {
 
         panel.add(Box.createVerticalStrut(50));
         panel.add(titleLabel);
-        panel.add(subtitleLabel);
-        panel.add(Box.createVerticalStrut(50));
+        panel.add(Box.createVerticalStrut(60)); 
+        
+        panel.add(btnResume);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(btnStart);
         panel.add(Box.createVerticalStrut(20));
         panel.add(btnHowToPlay);
@@ -60,21 +65,6 @@ public class MainMenu extends JFrame {
         panel.add(btnExit);
 
         add(panel);
-    }
-
-    private Font loadCustomFont(String fontFileName, float size) {
-        try {
-            InputStream is = getClass().getResourceAsStream("/fonts/" + fontFileName);
-            if (is == null) {
-                System.out.println("Warning: Font " + fontFileName + " not found!");
-                return null;
-            }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
-            return font.deriveFont(size);
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     private JButton createStyledButton(String text) {
