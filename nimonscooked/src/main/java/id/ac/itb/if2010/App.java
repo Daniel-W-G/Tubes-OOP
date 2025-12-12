@@ -1,12 +1,12 @@
 package id.ac.itb.if2010;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.Timer;
 
 import id.ac.itb.if2010.model.ChefPlayer;
 import id.ac.itb.if2010.model.Direction;
@@ -15,13 +15,21 @@ import id.ac.itb.if2010.model.Plate;
 import id.ac.itb.if2010.model.Position;
 import id.ac.itb.if2010.model.Station;
 import id.ac.itb.if2010.view.GamePanel;
+import id.ac.itb.if2010.view.MainMenu;
 
 public class App {
     private static boolean isGameOver = false;
     private static int activeChefIndex = 0; 
+    private static int gameTimeLeft = 0;
+    private static long lastSecondTime = 0;
 
-    public static void main(String[] args) {
-        GameMap map = new GameMap();
+    public static void startGame(String mapType, int targetScore, int durationInSeconds) {
+        isGameOver = false;
+        activeChefIndex = 0;  
+        gameTimeLeft = durationInSeconds; 
+
+        GameMap map = new GameMap(); 
+        
         ChefPlayer chef1 = new ChefPlayer("Chef 1", new Position(4, 3));
         chef1.setInventory(new Plate(chef1.getPosition()));
         map.addChef(chef1);
@@ -29,11 +37,14 @@ public class App {
         ChefPlayer chef2 = new ChefPlayer("Chef 2", new Position(10, 3));
         map.addChef(chef2);
         
-        JFrame window = new JFrame("Nimonscooked v2.0 - Multi Chef");
+        JFrame window = new JFrame("Nimonscooked - " + mapType);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         
         GamePanel gamePanel = new GamePanel(map);
+        
+        gamePanel.setGameInfo(targetScore, gameTimeLeft);
+        
         window.add(gamePanel);
         window.pack();
         window.setLocationRelativeTo(null);
@@ -51,7 +62,6 @@ public class App {
 
                 if (key.equals("b")) {
                     activeChefIndex = (activeChefIndex + 1) % chefs.size();
-                    System.out.println("Switched to " + chefs.get(activeChefIndex).getName());
                     gamePanel.setActiveChefIndex(activeChefIndex);
                     gamePanel.repaint();
                     return;
@@ -108,19 +118,46 @@ public class App {
             }
         });
 
+        lastSecondTime = System.currentTimeMillis();
+
         Timer timer = new Timer(50, e -> {
             if (isGameOver) return;
+
+            long now = System.currentTimeMillis();
+            if (now - lastSecondTime >= 1000) {
+                gameTimeLeft--;
+                gamePanel.updateTimeLeft(gameTimeLeft);
+                lastSecondTime = now;
+                
+                if (gameTimeLeft <= 0) {
+                    isGameOver = true;
+                    int finalScore = map.getOrderManager().getScore();
+                    
+                    if (finalScore >= targetScore) {
+                        JOptionPane.showMessageDialog(window, 
+                            "VICTORY!\nScore: " + finalScore + "\nTarget Reached!");
+                    } else {
+                        JOptionPane.showMessageDialog(window, 
+                            "GAME OVER (TIME UP)!\nScore: " + finalScore + "\nTarget Failed!");
+                    }
+                    window.dispose();
+                    new MainMenu().setVisible(true);
+                }
+            }
+
             if (map.getOrderManager() != null) {
                 map.getOrderManager().tick();
-                if (map.getOrderManager().getFailedOrders() >= 5) {
-                    isGameOver = true;
-                    JOptionPane.showMessageDialog(window, "GAME OVER! Too many failed orders.");
-                }
             }
             gamePanel.repaint();
         });
         timer.start();
         
-        System.out.println("Game Started! Press 'B' to Switch Chefs.");
+        System.out.println("Game Started! Target: " + targetScore + ", Time: " + durationInSeconds + "s | Press 'B' to Switch Chefs.");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new MainMenu().setVisible(true);
+        });
     }
 }

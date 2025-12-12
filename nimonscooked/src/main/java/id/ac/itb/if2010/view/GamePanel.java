@@ -9,38 +9,28 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import id.ac.itb.if2010.model.AssemblyStation;
-import id.ac.itb.if2010.model.BoilingPot;
-import id.ac.itb.if2010.model.ChefPlayer;
-import id.ac.itb.if2010.model.CookingDevice;
-import id.ac.itb.if2010.model.CookingStation;
-import id.ac.itb.if2010.model.CuttingStation;
-import id.ac.itb.if2010.model.FryingPan;
-import id.ac.itb.if2010.model.GameMap;
-import id.ac.itb.if2010.model.Ingredient;
-import id.ac.itb.if2010.model.IngredientState;
-import id.ac.itb.if2010.model.IngredientStorage;
-import id.ac.itb.if2010.model.Item;
-import id.ac.itb.if2010.model.KitchenUtensil;
-import id.ac.itb.if2010.model.Order;
-import id.ac.itb.if2010.model.Oven;
-import id.ac.itb.if2010.model.Plate;
-import id.ac.itb.if2010.model.PlateStorage;
-import id.ac.itb.if2010.model.ServingCounter;
-import id.ac.itb.if2010.model.Station;
-import id.ac.itb.if2010.model.TrashStation;
-import id.ac.itb.if2010.model.Wall;
-import id.ac.itb.if2010.model.WashingStation;
+import id.ac.itb.if2010.model.*;
 
 public class GamePanel extends JPanel {
     private GameMap map;
     private final int TILE_SIZE = 64;
-    private int activeChefIndex = 0;
+    private int activeChefIndex = 0;    
+    private int targetScore = 0;
+    private int timeLeft = 0;
 
     public GamePanel(GameMap map) {
         this.map = map;
         this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 100)); 
         this.setBackground(Color.BLACK);
+    }
+    
+    public void setGameInfo(int target, int time) {
+        this.targetScore = target;
+        this.timeLeft = time;
+    }
+
+    public void updateTimeLeft(int time) {
+        this.timeLeft = time;
     }
     
     public void setActiveChefIndex(int index) {
@@ -273,28 +263,40 @@ public class GamePanel extends JPanel {
 
     private void drawUI(Graphics g) {
         g.setColor(new Color(50, 50, 50));
-        g.fillRect(0, 0, getWidth(), 50);
+        g.fillRect(0, 0, getWidth(), 60);
         
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
+        
         if (map.getOrderManager() != null) {
-            int score = map.getOrderManager().getScore();
-            g.drawString("Score: " + score, 20, 30);
+            int currentScore = map.getOrderManager().getScore();
             
-            int xPos = 150;
+            g.drawString("Score: " + currentScore + " / " + targetScore, 20, 25);
+            
+            int min = timeLeft / 60;
+            int sec = timeLeft % 60;
+            String timeStr = String.format("%02d:%02d", min, sec);
+            
+            if (timeLeft < 30) g.setColor(Color.RED);
+            else g.setColor(Color.GREEN);
+            
+            g.setFont(new Font("Arial", Font.BOLD, 24));
+            g.drawString(timeStr, 20, 50);
+
+            int xPos = 200;
             for (Order o : map.getOrderManager().getActiveOrders()) {
                 g.setColor(new Color(255, 255, 200)); 
-                g.fillRect(xPos, 5, 100, 40);
+                g.fillRect(xPos, 10, 100, 40);
                 
                 g.setColor(Color.BLACK);
                 g.setFont(new Font("Arial", Font.PLAIN, 12));
-                g.drawString(o.getRecipeName(), xPos + 5, 20);
+                g.drawString(o.getRecipeName(), xPos + 5, 25);
                 
                 g.setColor(Color.GRAY);
-                g.fillRect(xPos + 5, 25, 90, 5);
+                g.fillRect(xPos + 5, 35, 90, 5);
                 g.setColor(Color.GREEN);
                 int barWidth = (int) (90 * ((double)o.getTimeLeft() / o.getMaxTime()));
-                g.fillRect(xPos + 5, 25, barWidth, 5);
+                g.fillRect(xPos + 5, 35, barWidth, 5);
                 
                 xPos += 110;
             }
