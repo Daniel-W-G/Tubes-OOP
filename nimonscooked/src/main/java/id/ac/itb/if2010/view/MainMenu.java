@@ -2,6 +2,8 @@ package id.ac.itb.if2010.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainMenu extends JFrame {
 
@@ -13,21 +15,30 @@ public class MainMenu extends JFrame {
         setLayout(new GridBagLayout());
 
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); 
-        panel.setBackground(new Color(240, 240, 240)); 
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(new Color(240, 240, 240));
+
+        Font titleFont = loadCustomFont("PressStart2P-Regular.ttf", 48f);
+        if (titleFont == null) {
+            titleFont = new Font("Serif", Font.BOLD, 48);
+        }
 
         JLabel titleLabel = new JLabel("NIMONSCOOKED");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 48));
+        titleLabel.setFont(titleFont);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel subtitleLabel = new JLabel("Map A: Sushi");
+        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        subtitleLabel.setForeground(Color.GRAY);
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton btnStart = createStyledButton("Start Game");
         JButton btnHowToPlay = createStyledButton("How to Play");
         JButton btnExit = createStyledButton("Exit");
-
         
         btnStart.addActionListener(e -> {
-            dispose(); 
-            new LevelSelector().setVisible(true); 
+            dispose();
+            new LevelSelector().setVisible(true);
         });
 
         btnHowToPlay.addActionListener(e -> {
@@ -40,6 +51,7 @@ public class MainMenu extends JFrame {
 
         panel.add(Box.createVerticalStrut(50));
         panel.add(titleLabel);
+        panel.add(subtitleLabel);
         panel.add(Box.createVerticalStrut(50));
         panel.add(btnStart);
         panel.add(Box.createVerticalStrut(20));
@@ -50,6 +62,21 @@ public class MainMenu extends JFrame {
         add(panel);
     }
 
+    private Font loadCustomFont(String fontFileName, float size) {
+        try {
+            InputStream is = getClass().getResourceAsStream("/fonts/" + fontFileName);
+            if (is == null) {
+                System.out.println("Warning: Font " + fontFileName + " not found!");
+                return null;
+            }
+            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+            return font.deriveFont(size);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -58,8 +85,7 @@ public class MainMenu extends JFrame {
         button.setFocusPainted(false);
         button.setOpaque(true);
         button.setBorderPainted(false);
-        button.setBackground(Color.WHITE); 
-        
+        button.setBackground(Color.WHITE);
         return button;
     }
 
@@ -73,7 +99,7 @@ public class MainMenu extends JFrame {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JPanel grid = new JPanel(new GridLayout(0, 2, 10, 10));
+        JPanel grid = new JPanel(new GridLayout(0, 2, 10, 5));
         grid.setBackground(Color.WHITE);
         grid.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -97,9 +123,8 @@ public class MainMenu extends JFrame {
             "3. Place food on a Plate\n" +
             "4. Deliver to Serving Window before time runs out!"
         );
-
         missionText.setEditable(false);
-        missionText.setBackground(new Color(240, 240, 240)); 
+        missionText.setBackground(new Color(240, 240, 240));
         missionText.setFont(new Font("Arial", Font.PLAIN, 14));
         missionText.setMargin(new Insets(10, 10, 10, 10));
 
@@ -120,7 +145,7 @@ public class MainMenu extends JFrame {
         JLabel lblKey = new JLabel(key, SwingConstants.CENTER);
         lblKey.setFont(new Font("Monospaced", Font.BOLD, 16));
         lblKey.setOpaque(true);
-        lblKey.setBackground(new Color(220, 220, 220)); // Abu-abu mirip tombol keyboard
+        lblKey.setBackground(new Color(220, 220, 220));
         lblKey.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         
         JLabel lblDesc = new JLabel(desc);
