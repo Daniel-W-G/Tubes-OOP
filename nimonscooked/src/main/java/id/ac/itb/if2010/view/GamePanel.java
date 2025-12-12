@@ -250,8 +250,8 @@ public class GamePanel extends JPanel {
         }
         else if (item instanceof Ingredient) {
             Ingredient ing = (Ingredient) item;
-            if (ing.getState() == IngredientState.CHOPPED) label = "CHOP";
-            else if (ing.getState() == IngredientState.COOKED) label = "COOK";
+            if (ing.getState() == IngredientState.CHOPPED) label = "CHOPED " + ing.getName();
+            else if (ing.getState() == IngredientState.COOKED) label = "COOKED " + ing.getName();
             else label = item.getName().length() > 4 ? item.getName().substring(0,4) : item.getName();
         }
         else {
