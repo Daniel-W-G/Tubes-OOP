@@ -32,7 +32,7 @@ public class GamePanel extends JPanel {
 
     public GamePanel(GameMap map) {
         this.map = map;
-        this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 120)); 
+        this.setPreferredSize(new Dimension(map.getCols() * TILE_SIZE, map.getRows() * TILE_SIZE + 130)); 
         this.setBackground(Color.BLACK);
         
         loadAssets();
@@ -60,8 +60,11 @@ public class GamePanel extends JPanel {
             assetMap.put("Ebi Maki", loadImage("Ebi Maki.png"));
             assetMap.put("Fish Cucumber Roll", loadImage("Fish Cucumber Roll.png"));
             
+            assetMap.put("Sink Empty", loadImage("sink kosong.png"));
+            assetMap.put("Sink Dirty", loadImage("sink dirty plates.png"));
+            
         } catch (Exception e) {
-            System.out.println("Gagal load gambar: " + e.getMessage());
+            System.out.println("Failed to load image: " + e.getMessage());
         }
     }
     
@@ -97,10 +100,9 @@ public class GamePanel extends JPanel {
             if (map.getOrderManager() != null) {
                 int xPos = 220;
                 int orderBoxWidth = 110; 
-                int orderBoxHeight = 70;
                 
                 for (Order o : map.getOrderManager().getActiveOrders()) {
-                    Rectangle orderRect = new Rectangle(xPos, 5, orderBoxWidth, orderBoxHeight);
+                    Rectangle orderRect = new Rectangle(xPos, 5, orderBoxWidth, 70);
                     if (orderRect.contains(mouseX, mouseY)) {
                         showSingleRecipe(o.getRecipeName());
                         return "RECIPE_VIEW";
@@ -148,25 +150,118 @@ public class GamePanel extends JPanel {
             }
         }
         
+        ChefPlayer activeChef = map.getChefs().get(activeChefIndex);
+        int targetX = activeChef.getPosition().getX();
+        int targetY = activeChef.getPosition().getY();
+        switch (activeChef.getDirection()) {
+            case UP: targetY--; break;
+            case DOWN: targetY++; break;
+            case LEFT: targetX--; break;
+            case RIGHT: targetX++; break;
+        }
+
+        if (!isPaused && map.isValidPosition(targetX, targetY)) {
+            Station targetStation = map.getStationAt(targetX, targetY);
+            if (targetStation != null && !(targetStation instanceof Wall)) {
+                drawHighlight(g, targetX, targetY);
+            }
+        }
+        
         List<ChefPlayer> chefs = map.getChefs();
         for (int i = 0; i < chefs.size(); i++) {
             drawChef(g, chefs.get(i), i == activeChefIndex);
         }
 
         drawUI(g);
+        drawControlsUI(g); 
         
         if (isPaused) {
             drawPauseOverlay(g);
         }
     }
 
+    private void drawHighlight(Graphics g, int x, int y) {
+        int sx = x * TILE_SIZE;
+        int sy = y * TILE_SIZE + MAP_OFFSET_Y;
+        
+        g.setColor(new Color(255, 255, 0, 100));
+        g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
+        
+        g.setColor(Color.YELLOW);
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setStroke(new BasicStroke(3));
+        g2d.drawRect(sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2);
+        g2d.dispose();
+    }
+
+    private void drawControlsUI(Graphics g) {
+        int baseY = getHeight() - 40; 
+        int startX = 30;
+        int keyW = 30;
+        
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g2d.setFont(new Font("Arial", Font.BOLD, 12));
+        
+        drawKey(g2d, "W", startX + keyW + 5, baseY - keyW);
+        drawKey(g2d, "A", startX, baseY);
+        drawKey(g2d, "S", startX + keyW + 5, baseY);
+        drawKey(g2d, "D", startX + 2 * (keyW + 5), baseY);
+        
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("MOVE", startX + 115, baseY + 18);
+        
+        int actionX = startX + 220;
+        drawKey(g2d, "E", actionX, baseY);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("INTERACT", actionX + 45, baseY + 18);
+        
+        int switchX = actionX + 170;
+        drawKey(g2d, "B", switchX, baseY);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("SWITCH", switchX + 45, baseY + 18);
+
+
+        g2d.dispose();
+    }
+    
+    private void drawKey(Graphics g, String key, int x, int y) {
+        drawKey(g, key, x, y, 30); 
+    }
+
+    private void drawKey(Graphics g, String key, int x, int y, int w) {
+        int h = 30;
+        int radius = 8; 
+        Graphics2D g2d = (Graphics2D) g;
+        
+        g2d.setColor(new Color(50, 50, 50));
+        g2d.fillRoundRect(x, y, w, h, radius, radius);
+        
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawRoundRect(x, y, w, h, radius, radius);
+        
+        FontMetrics fm = g2d.getFontMetrics();
+        int textX = x + (w - fm.stringWidth(key)) / 2;
+        int textY = y + (h - fm.getHeight()) / 2 + fm.getAscent();
+        
+        g2d.setColor(Color.WHITE);
+        g2d.drawString(key, textX, textY);
+    }
+
     private void drawTile(Graphics g, int x, int y) {
         int sx = x * TILE_SIZE;
         int sy = y * TILE_SIZE + MAP_OFFSET_Y;
 
-        g.setColor(Color.LIGHT_GRAY);
+        Color color1 = new Color(233, 233, 233);
+        Color color2 = new Color(144, 142, 140);
+        
+        Color baseColor = ((x + y) % 2 == 0) ? color1 : color2;
+
+        g.setColor(baseColor);
         g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
-        g.setColor(Color.WHITE);
+        g.setColor(new Color(190, 190, 190));
         g.drawRect(sx, sy, TILE_SIZE, TILE_SIZE);
 
         Station station = map.getStationAt(x, y);
@@ -234,15 +329,23 @@ public class GamePanel extends JPanel {
                 g.drawString("Dirty: " + ((PlateStorage)station).getDirtyPlateCount(), sx+5, sy+50);
             }
             else if (station instanceof WashingStation) {
-                g.setColor(Color.CYAN); 
-                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
-                g.setColor(Color.BLACK); g.drawString("SINK", sx+15, sy+20);
                 WashingStation sink = (WashingStation) station;
-                if (sink.hasPlates()) { 
-                    BufferedImage img = assetMap.get("Dirty Plate");
-                    if (img != null) g.drawImage(img, sx+15, sy+15, 34, 34, null);
-                    else { g.setColor(Color.WHITE); g.fillOval(sx+20, sy+30, 20, 20); }
+                BufferedImage sinkImg;
+                
+                if (sink.hasPlates() || sink.getProgress() > 0) {
+                    sinkImg = assetMap.get("Sink Dirty");
+                } else {
+                    sinkImg = assetMap.get("Sink Empty");
                 }
+                
+                if (sinkImg != null) {
+                    g.drawImage(sinkImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+                } else {
+                    g.setColor(Color.CYAN); 
+                    g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                    g.setColor(Color.BLACK); g.drawString("SINK", sx+15, sy+20);
+                }
+                
                 if (sink.getProgress() > 0) drawProgressBar(g, sx, sy, sink.getProgress(), 100);
             }
             else if (station instanceof TrashStation) {
@@ -332,7 +435,8 @@ public class GamePanel extends JPanel {
         g.setColor(new Color(50, 50, 50));
         g.fillRect(0, 0, getWidth(), 80);
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        g.setFont(new Font("Arial", Font.BOLD, 16)); 
         
         if (map.getOrderManager() != null) {
             int currentScore = map.getOrderManager().getScore();
@@ -371,11 +475,12 @@ public class GamePanel extends JPanel {
 
             int xPos = 220; 
             int orderBoxWidth = 110; 
-            int orderBoxHeight = 70; 
+            
+            g.setFont(new Font("Arial", Font.BOLD, 11)); 
             
             for (Order o : map.getOrderManager().getActiveOrders()) {
                 g.setColor(new Color(255, 255, 200)); 
-                g.fillRect(xPos, 5, orderBoxWidth, orderBoxHeight);
+                g.fillRect(xPos, 5, orderBoxWidth, 70);
                 
                 BufferedImage icon = assetMap.get(o.getRecipeName());
                 if (icon != null) {
@@ -383,7 +488,6 @@ public class GamePanel extends JPanel {
                 }
                 
                 g.setColor(Color.BLACK);
-                g.setFont(new Font("Arial", Font.BOLD, 11));
                 String text = o.getRecipeName();
                 int textW = g.getFontMetrics().stringWidth(text);
                 g.drawString(text, xPos + (orderBoxWidth - textW)/2, 60);
@@ -404,7 +508,7 @@ public class GamePanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
         
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 48));
+        g.setFont(new Font("Arial", Font.BOLD, 48)); 
         String title = "GAME PAUSED";
         int titleW = g.getFontMetrics().stringWidth(title);
         g.drawString(title, (getWidth() - titleW) / 2, getHeight() / 2 - 100);
@@ -418,7 +522,7 @@ public class GamePanel extends JPanel {
         g.fillRect(btnX, startY, btnW, btnH);
         resumeButtonRect.setBounds(btnX, startY, btnW, btnH);
         g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.setFont(new Font("Arial", Font.BOLD, 20)); 
         drawStringCentered(g, "RESUME", btnX, startY, btnW, btnH);
         
         int btnY2 = startY + 70;
