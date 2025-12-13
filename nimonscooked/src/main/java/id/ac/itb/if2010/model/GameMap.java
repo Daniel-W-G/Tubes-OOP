@@ -86,7 +86,6 @@ public class GameMap {
         grid[1][3] = new CuttingStation(new Position(3, 1));
         grid[1][5] = new CuttingStation(new Position(5, 1));
         
-        
         PlateStorage plateStorage = new PlateStorage(new Position(11, 7));
         grid[7][11] = plateStorage;
         
@@ -95,7 +94,6 @@ public class GameMap {
         
         grid[6][0] = new ServingCounter(new Position(0, 6), orderManager, plateStorage);
         grid[7][0] = new ServingCounter(new Position(0, 7), orderManager, plateStorage);
-
         
         grid[7][6] = new TrashStation(new Position(6, 7), plateStorage);
     }

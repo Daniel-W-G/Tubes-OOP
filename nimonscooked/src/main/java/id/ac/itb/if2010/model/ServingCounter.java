@@ -34,13 +34,11 @@ public class ServingCounter extends Station {
             chef.setInventory(null);
 
             if (linkedStorage != null) {
-                          
                 new Thread(() -> {
                     try {
-                        linkedStorage.reduceCleanPlate();
                         Thread.sleep(10000); 
                         linkedStorage.addDirtyPlate();
-                        System.out.println("Plate returned to storage after 10 seconds!");
+                        System.out.println("Dirty plate returned to storage after 10 seconds!");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

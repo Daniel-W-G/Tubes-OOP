@@ -9,7 +9,9 @@ public class OrderManager {
     private List<Order> activeOrders;
     private List<Recipe> availableRecipes;
     private int score;
+    private int successfulOrders;
     private int failedOrders;
+    private int wrongOrders;
     private Random random;
 
     public OrderManager(List<Recipe> levelRecipes) {
@@ -47,7 +49,8 @@ public class OrderManager {
             activeOrders.remove(o);
             failedOrders++;
             score -= 10;
-            System.out.println("ORDER FAILED: " + o.getRecipeName());
+            if (score < 0) score = 0;
+            System.out.println("ORDER FAILED: Late to serve " + o.getRecipeName());
             spawnOrder();
         }
     }
@@ -60,16 +63,23 @@ public class OrderManager {
                 score += o.getReward();
                 activeOrders.remove(o);
                 System.out.println("ORDER SUCCESS: Served " + dishName);
+                successfulOrders++;
                 spawnOrder();
                 return true;
             }
         }
         
         System.out.println("ORDER FAIL: Customer didn't want " + dishName);
+        wrongOrders++;
+        score -= 5;
+        if (score < 0) score = 0;
         return false;
     }
     
     public List<Order> getActiveOrders() { return activeOrders; }
     public int getScore() { return score; }
     public int getFailedOrders() { return failedOrders; }
+    public int getSuccessfulOrders() { return successfulOrders; }
+    public int getWrongOrders() { return wrongOrders; }
+
 }
