@@ -20,6 +20,7 @@ public class GamePanel extends JPanel {
     
     private int targetScore = 0;
     private boolean isPaused = false;
+    private int timeRemaining = 0;
     
     private final int MAP_OFFSET_Y = 85; 
     
@@ -83,6 +84,10 @@ public class GamePanel extends JPanel {
 
     public void setGameInfo(int target) {
         this.targetScore = target;
+    }
+    
+    public void setTimeRemaining(int seconds) {
+        this.timeRemaining = seconds;
     }
     
     public void setActiveChefIndex(int index) {
@@ -179,7 +184,7 @@ public class GamePanel extends JPanel {
 
         drawUI(g);
         drawControlsUI(g); 
-        
+        showTime(g, timeRemaining);
         if (isPaused) {
             drawPauseOverlay(g);
         }
@@ -461,16 +466,26 @@ public class GamePanel extends JPanel {
         }
     }
 
+    private void showTime(Graphics g, int timeRemaining) {
+        int minutes = timeRemaining / 60;
+        int seconds = timeRemaining % 60;
+        String timeStr = String.format("Time: %02d:%02d", minutes, seconds);
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.drawString(timeStr, 700, 50);
+        
+    }
+
     private void drawUI(Graphics g) {
         g.setColor(new Color(50, 50, 50));
         g.fillRect(0, 0, getWidth(), 80);
         g.setColor(Color.WHITE);
         
         g.setFont(new Font("Arial", Font.BOLD, 16)); 
-        
         if (map.getOrderManager() != null) {
             int currentScore = map.getOrderManager().getScore();
             g.drawString("Score: " + currentScore + " / " + targetScore, 20, 25);
+            
             
             int failed = map.getOrderManager().getFailedOrders();
             int lives = 5 - failed;
@@ -571,6 +586,7 @@ public class GamePanel extends JPanel {
         g.setColor(Color.WHITE);
         drawStringCentered(g, "EXIT GAME", btnX, btnY3, btnW, btnH);
     }
+
     
     private void drawStringCentered(Graphics g, String text, int x, int y, int w, int h) {
         FontMetrics fm = g.getFontMetrics();

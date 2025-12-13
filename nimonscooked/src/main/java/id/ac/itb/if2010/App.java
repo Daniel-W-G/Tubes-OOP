@@ -23,6 +23,7 @@ public class App {
     private static Timer gameTimer;
     private static String lastMapType;
     private static int lastTargetScore;
+    private static int timeRemaining;
 
     public static void startGame(String mapType, int targetScore) {
         if (gameTimer != null && gameTimer.isRunning()) {
@@ -34,6 +35,7 @@ public class App {
 
         lastMapType = mapType;
         lastTargetScore = targetScore;
+        timeRemaining = 60000;
 
         isGameOver = false;
         isPaused = false; 
@@ -155,6 +157,9 @@ public class App {
         gameTimer = new Timer(50, e -> {
             if (isGameOver || isPaused || window == null) return;
 
+            timeRemaining -= 50;
+            gamePanel.setTimeRemaining(timeRemaining / 1000);
+
             if (map.getOrderManager() != null) {
                 map.getOrderManager().tick();
                 
@@ -173,15 +178,24 @@ public class App {
                     window.dispose();
                     new MainMenu().setVisible(true);
                 }
-                else if (score >= targetScore) {
+                
+                else if (timeRemaining <= 0) {
                     isGameOver = true;
                     gameTimer.stop();
-                    
-                    JOptionPane.showMessageDialog(window, 
+                    if (score >= targetScore) {                    
+                        JOptionPane.showMessageDialog(window, 
                         "VICTORY! Target Score Reached!\nFinal Score: " + score + "\nSuccessful Orders: " + success + "\nFailed (Late) Orders: " + failed + "\nWrong Orders: " + wrong);
-                    
-                    window.dispose();
-                    new MainMenu().setVisible(true);
+                        window.dispose();
+                        new MainMenu().setVisible(true);
+                    }
+                    else{
+                        isGameOver = true;
+                        gameTimer.stop();  
+                        JOptionPane.showMessageDialog(window, 
+                        "GAME OVER! Time's Up!\nFinal Score: " + score + "\nSuccessful Orders: " + success + "\nFailed (Late) Orders: " + failed + "\nWrong Orders: " + wrong);
+                        window.dispose();
+                        new MainMenu().setVisible(true);
+                    }
                 }
             }
             
