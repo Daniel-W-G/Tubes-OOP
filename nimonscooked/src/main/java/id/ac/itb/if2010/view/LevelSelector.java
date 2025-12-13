@@ -1,8 +1,10 @@
 package id.ac.itb.if2010.view;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import id.ac.itb.if2010.App; 
+import java.awt.image.BufferedImage;
 
 public class LevelSelector extends JFrame {
     
@@ -16,11 +18,39 @@ public class LevelSelector extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
-        setLayout(new GridBagLayout()); 
 
-        JPanel mainPanel = new JPanel();
+        BufferedImage tempImage = null;
+        try {
+            tempImage = ImageIO.read(getClass().getResourceAsStream("/assets/level select bg.png"));
+        } catch (Exception e) {
+            System.err.println("Gagal memuat background: " + e.getMessage());
+        }
+        final BufferedImage bgImage = tempImage;
+
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+
+                if (bgImage != null) {
+                    double scale = Math.max((double)getWidth() / bgImage.getWidth(), (double)getHeight() / bgImage.getHeight());
+                    int scaledW = (int) (bgImage.getWidth() * scale);
+                    int scaledH = (int) (bgImage.getHeight() * scale);
+                    int x = (getWidth() - scaledW) / 2;
+                    int y = (getHeight() - scaledH) / 2;
+                    g2d.drawImage(bgImage, x, y, scaledW, scaledH, null);
+                } else {
+                    g2d.setColor(new Color(240, 240, 240));
+                    g2d.fillRect(0, 0, getWidth(), getHeight());
+                }
+
+                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBackground(new Color(240, 240, 240)); 
 
         JLabel headerLabel = new JLabel("SELECT LEVEL");
         headerLabel.setFont(new Font("Arial", Font.BOLD, 32));

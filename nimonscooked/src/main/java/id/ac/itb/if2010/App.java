@@ -35,7 +35,7 @@ public class App {
 
         lastMapType = mapType;
         lastTargetScore = targetScore;
-        timeRemaining = 60000;
+        timeRemaining = 180000;
 
         isGameOver = false;
         isPaused = false; 

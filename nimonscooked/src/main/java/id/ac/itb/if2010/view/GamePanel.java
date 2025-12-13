@@ -75,6 +75,8 @@ public class GamePanel extends JPanel {
             assetMap.put("Wall Brick", loadImage("wall.png")); 
             assetMap.put("Assembly Table", loadImage("table2.png"));
             assetMap.put("Serving Counter", loadImage("serving counter.png"));
+
+            assetMap.put("Menu Background", loadImage("sushimate cover.png"));
             
         } catch (Exception e) {
             System.out.println("Failed to load image: " + e.getMessage());
@@ -239,6 +241,10 @@ public class GamePanel extends JPanel {
         g2d.setColor(Color.WHITE);
         g2d.drawString("SWITCH", switchX + 45, baseY + 18);
 
+        int recipeX = switchX + 130;
+        drawKey(g2d, "!", recipeX, baseY);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("CLICK ON THE ORDER TO SEE THE RECIPE", recipeX + 45, baseY + 18);
 
         g2d.dispose();
     }

@@ -3,6 +3,9 @@ package id.ac.itb.if2010.view;
 import javax.swing.*;
 import java.awt.*;
 import id.ac.itb.if2010.App;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class MainMenu extends JFrame {
 
@@ -11,11 +14,48 @@ public class MainMenu extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridBagLayout());
 
-        JPanel panel = new JPanel();
+        BufferedImage tempImage = null;
+        try {
+            tempImage = ImageIO.read(getClass().getResourceAsStream("/assets/sushimate cover.png"));
+        } catch (Exception e) {
+            System.err.println("Failed to load background image: " + e.getMessage());
+        }
+        final BufferedImage bgImage = tempImage;
+
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+
+                if (bgImage != null) {
+                    double panelWidth = getWidth();
+                    double panelHeight = getHeight();
+                    double imageWidth = bgImage.getWidth();
+                    double imageHeight = bgImage.getHeight();
+
+                    double scale = Math.max(panelWidth / imageWidth, panelHeight / imageHeight);
+
+                    double scaledWidth = imageWidth * scale;
+                    double scaledHeight = imageHeight * scale;
+
+                    int x = (int) ((panelWidth - scaledWidth) / 2);
+                    int y = (int) ((panelHeight - scaledHeight) / 2);
+
+                    g2d.drawImage(bgImage, x, y, (int) scaledWidth, (int) scaledHeight, null);
+                } else {
+                    g2d.setColor(new Color(50, 50, 50));
+                    g2d.fillRect(0, 0, getWidth(), getHeight());
+                }
+
+                g2d.setColor(new Color(0, 0, 0, 100));
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(new Color(240, 240, 240));
+        panel.setOpaque(false);
 
         JLabel titleLabel = new JLabel("SUSHIMATE") {
     @Override
@@ -99,30 +139,77 @@ titleLabel.setPreferredSize(new Dimension(650, 100));
             System.exit(0);
         });
 
-        panel.add(Box.createVerticalStrut(50));
-        panel.add(titleLabel);
-        panel.add(Box.createVerticalStrut(60)); 
+        panel.setLayout(new GridBagLayout());
         
-        panel.add(btnResume);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(btnStart);
-        panel.add(Box.createVerticalStrut(20));
-        panel.add(btnHowToPlay);
-        panel.add(Box.createVerticalStrut(20));
-        panel.add(btnExit);
+        GridBagConstraints titleGbc = new GridBagConstraints();
+        titleGbc.gridx = 0; 
+        titleGbc.gridy = 0;
+        titleGbc.gridwidth = 2;
+        titleGbc.insets = new Insets(0, 0, 50, 0); 
+        titleGbc.anchor = GridBagConstraints.CENTER; 
+        panel.add(titleLabel, titleGbc);
 
-        add(panel);
+        GridBagConstraints btnGbc = new GridBagConstraints();
+        btnGbc.gridx = 0;
+        btnGbc.gridy = GridBagConstraints.RELATIVE;
+        btnGbc.insets = new Insets(10, 80, 10, 0); 
+        btnGbc.anchor = GridBagConstraints.WEST;
+        btnGbc.weightx = 0; 
+        
+        panel.add(btnResume, btnGbc);
+        panel.add(btnStart, btnGbc);
+        panel.add(btnHowToPlay, btnGbc);
+        panel.add(btnExit, btnGbc);
+
+        GridBagConstraints spacerGbc = new GridBagConstraints();
+        spacerGbc.gridx = 1;
+        spacerGbc.gridy = 1;
+        spacerGbc.gridheight = 4;
+        spacerGbc.weightx = 1.0;
+        spacerGbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        panel.add(Box.createHorizontalGlue(), spacerGbc);
+
+        setContentPane(panel);
     }
 
     private JButton createStyledButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.PLAIN, 20));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(200, 50));
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                int alpha = 180;
+                Color buttonColor = new Color(255, 215, 0, alpha); 
+
+                if (getModel().isPressed()) {
+                    buttonColor = new Color(200, 170, 0, 255); 
+                } else if (getModel().isRollover()) {
+                    buttonColor = new Color(255, 215, 0, 230);
+                }
+
+                g2.setColor(buttonColor);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                g2.setColor(Color.WHITE);
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 30, 30);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+
+        button.setFont(new Font("Arial", Font.BOLD, 18));
+        button.setForeground(new Color(50, 50, 50)); 
+        button.setPreferredSize(new Dimension(250, 50)); 
+        
+        button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        button.setOpaque(true);
         button.setBorderPainted(false);
-        button.setBackground(Color.WHITE);
+        button.setOpaque(false);
+        
         return button;
     }
 
