@@ -17,9 +17,59 @@ public class MainMenu extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(240, 240, 240));
 
-        JLabel titleLabel = new JLabel("SUSHIMATE");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 48)); 
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel titleLabel = new JLabel("SUSHIMATE") {
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF); // Pixel perfect
+        
+        g2d.setFont(getFont());
+        FontMetrics fm = g2d.getFontMetrics();
+        int x = (getWidth() - fm.stringWidth(getText())) / 2;
+        int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+        
+        // 1. Gambar outline oren dulu (lebih tebal)
+        g2d.setColor(new Color(255, 140, 0)); // Oren
+        g2d.setStroke(new BasicStroke(3)); // Ketebalan outline
+        
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                if (i != 0 || j != 0) {
+                    g2d.drawString(getText(), x + i, y + j);
+                }
+            }
+        }
+        
+        // 2. Gambar gradient text di tengah
+        GradientPaint gradient = new GradientPaint(
+            0, 0, new Color(255, 215, 0),      // Kuning gold
+            0, getHeight(), new Color(255, 140, 0)  // Oren
+        );
+        
+        g2d.setPaint(gradient);
+        g2d.drawString(getText(), x, y);
+        
+        g2d.dispose();
+    }
+};
+
+
+try {
+    java.io.InputStream is = getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf");
+    Font pixelFont = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(48f);
+    
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    ge.registerFont(pixelFont);
+    
+    titleLabel.setFont(pixelFont);
+
+} catch (Exception e) {
+    titleLabel.setFont(new Font("Monospaced", Font.BOLD, 48));
+}
+
+titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+titleLabel.setPreferredSize(new Dimension(650, 100)); 
         
         JButton btnResume = createStyledButton("Resume Game");
         JButton btnStart = createStyledButton("New Game");
