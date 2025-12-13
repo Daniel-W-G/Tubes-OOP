@@ -1,17 +1,46 @@
 package id.ac.itb.if2010.view;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import id.ac.itb.if2010.model.*;
+import id.ac.itb.if2010.model.AssemblyStation;
+import id.ac.itb.if2010.model.BoilingPot;
+import id.ac.itb.if2010.model.ChefPlayer;
+import id.ac.itb.if2010.model.CookingDevice;
+import id.ac.itb.if2010.model.CookingStation;
+import id.ac.itb.if2010.model.CuttingStation;
+import id.ac.itb.if2010.model.FryingPan;
+import id.ac.itb.if2010.model.GameMap;
+import id.ac.itb.if2010.model.Ingredient;
+import id.ac.itb.if2010.model.IngredientState;
+import id.ac.itb.if2010.model.IngredientStorage;
+import id.ac.itb.if2010.model.Item;
+import id.ac.itb.if2010.model.Order;
+import id.ac.itb.if2010.model.Plate;
+import id.ac.itb.if2010.model.PlateStorage;
+import id.ac.itb.if2010.model.RecipeBook;
+import id.ac.itb.if2010.model.ServingCounter;
+import id.ac.itb.if2010.model.Station;
+import id.ac.itb.if2010.model.TrashStation;
+import id.ac.itb.if2010.model.Wall;
+import id.ac.itb.if2010.model.WashingStation;
 
 public class GamePanel extends JPanel {
     private GameMap map;
@@ -74,6 +103,7 @@ public class GamePanel extends JPanel {
 
             assetMap.put("Wall Brick", loadImage("wall.png")); 
             assetMap.put("Assembly Table", loadImage("table2.png"));
+            assetMap.put("Cooking Station", loadImage("cooking station.png"));
             assetMap.put("Serving Counter", loadImage("serving counter.png"));
 
             assetMap.put("Menu Background", loadImage("sushimate cover.png"));
@@ -324,6 +354,14 @@ public class GamePanel extends JPanel {
                 CookingStation cs = (CookingStation) station;
                 CookingDevice device = cs.getDevice();
                 
+                BufferedImage stationImg = assetMap.get("Cooking Station");
+                if (stationImg != null) {
+                    g.drawImage(stationImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+                } else {
+                    g.setColor(Color.RED); 
+                    g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                }
+
                 if (device != null) {
                     BufferedImage deviceImg = null;
                     String baseKey = "";
