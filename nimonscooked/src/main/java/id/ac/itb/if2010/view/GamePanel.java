@@ -62,6 +62,11 @@ public class GamePanel extends JPanel {
             
             assetMap.put("Sink Empty", loadImage("sink kosong.png"));
             assetMap.put("Sink Dirty", loadImage("sink dirty plates.png"));
+
+            assetMap.put("Frying Pan", loadImage("pan.png")); 
+            assetMap.put("Boiling Pot", loadImage("pot.png")); 
+            assetMap.put("Trash Can", loadImage("trash.png")); 
+            assetMap.put("Cutting Board Station", loadImage("cutting board.png"));
             
         } catch (Exception e) {
             System.out.println("Failed to load image: " + e.getMessage());
@@ -290,28 +295,45 @@ public class GamePanel extends JPanel {
             else if (station instanceof CookingStation) {
                 CookingStation cs = (CookingStation) station;
                 CookingDevice device = cs.getDevice();
-                g.setColor(Color.GRAY); 
-                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                
                 if (device != null) {
-                    if (device instanceof Oven) {
-                        g.setColor(Color.BLACK); g.fillRect(sx+10, sy+10, 44, 44);
-                        g.setColor(Color.ORANGE); g.drawString("OVEN", sx+15, sy+35);
-                    } 
-                    else if (device instanceof BoilingPot) {
-                        g.setColor(Color.DARK_GRAY); g.fillOval(sx+10, sy+10, 44, 44);
-                        g.setColor(Color.CYAN); g.drawString("POT", sx+20, sy+35);
+                    BufferedImage deviceImg = null;
+
+                    if (device instanceof BoilingPot) {
+                        deviceImg = assetMap.get("Boiling Pot"); 
                     }
                     else if (device instanceof FryingPan) {
-                        g.setColor(Color.BLACK); g.fillOval(sx+10, sy+10, 44, 44);
-                        g.setColor(Color.WHITE); g.drawString("PAN", sx+20, sy+35);
+                        deviceImg = assetMap.get("Frying Pan");
                     }
+                    if (deviceImg != null) {
+                        g.drawImage(deviceImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+                    }
+                    
+                    if (deviceImg == null) {
+                        g.setColor(Color.GRAY); g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                        if (device instanceof BoilingPot) {
+                            g.setColor(Color.CYAN); g.drawString("POT", sx+20, sy+35);
+                        }
+                        else if (device instanceof FryingPan) {
+                            g.setColor(Color.WHITE); g.drawString("PAN", sx+20, sy+35);
+                        } else { 
+                             g.setColor(Color.ORANGE); g.drawString("DEVICE", sx+15, sy+35);
+                        }
+                    }
+                    
                     if (device.isCooking()) drawProgressBar(g, sx, sy, device.getProgress(), 24);
                 }
             }
+            
             else if (station instanceof CuttingStation) {
-                g.setColor(new Color(210, 180, 140)); 
-                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
-                g.setColor(Color.BLACK); g.drawString("CUT", sx+20, sy+35);
+                BufferedImage cutImg = assetMap.get("Cutting Board Station");
+                if (cutImg != null) {
+                    g.drawImage(cutImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+                } else {
+                    g.setColor(new Color(210, 180, 140)); 
+                    g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                    g.setColor(Color.BLACK); g.drawString("CUT", sx+20, sy+35);
+                }
                 
                 CuttingStation cut = (CuttingStation) station;
                 if (cut.getCurrentItem() != null) drawItem(g, cut.getCurrentItem(), sx+10, sy+10, 44);
@@ -352,9 +374,14 @@ public class GamePanel extends JPanel {
                 if (sink.getProgress() > 0) drawProgressBar(g, sx, sy, sink.getProgress(), 100);
             }
             else if (station instanceof TrashStation) {
-                g.setColor(Color.BLACK);
-                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
-                g.setColor(Color.WHITE); g.drawString("TRASH", sx+10, sy+35);
+                BufferedImage trashImg = assetMap.get("Trash Can");
+                if (trashImg != null) {
+                    g.drawImage(trashImg, sx + 5, sy + 5, TILE_SIZE - 10, TILE_SIZE - 10, null); 
+                } else {
+                    g.setColor(Color.BLACK);
+                    g.drawString("TRASH", sx+10, sy+35);
+                }
+                
             }
             else if (station instanceof ServingCounter) {
                 g.setColor(Color.MAGENTA);
