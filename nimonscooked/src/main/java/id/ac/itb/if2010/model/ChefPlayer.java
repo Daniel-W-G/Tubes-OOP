@@ -8,11 +8,11 @@ public class ChefPlayer {
     private ChefAction currentAction;
     private Runnable cancelCallback; 
 
-    // Dash/Throw state
+    // Dash Throw State
     private long lastDashTime = 0;
-    private static final long DASH_COOLDOWN = 2000; // ms
-    private static final int DASH_DISTANCE = 3; // tiles
-    private static final int THROW_DISTANCE = 4; // tiles
+    private static final long DASH_COOLDOWN = 2000; 
+    private static final int DASH_DISTANCE = 3; 
+    private static final int THROW_DISTANCE = 4; 
 
     public ChefPlayer(String name, Position position) {
         this.name = name;
