@@ -65,8 +65,15 @@ public class GamePanel extends JPanel {
 
             assetMap.put("Frying Pan", loadImage("pan.png")); 
             assetMap.put("Boiling Pot", loadImage("pot.png")); 
+            assetMap.put("Frying Pan Cooking", loadImage("pan masak.png")); 
+            assetMap.put("Boiling Pot Cooking", loadImage("pot masak.png"));
+
             assetMap.put("Trash Can", loadImage("trash.png")); 
             assetMap.put("Cutting Board Station", loadImage("cutting board.png"));
+
+            assetMap.put("Wall Brick", loadImage("wall.png")); 
+            assetMap.put("Assembly Table", loadImage("table2.png"));
+            assetMap.put("Serving Counter", loadImage("serving counter.png"));
             
         } catch (Exception e) {
             System.out.println("Failed to load image: " + e.getMessage());
@@ -298,13 +305,26 @@ public class GamePanel extends JPanel {
                 
                 if (device != null) {
                     BufferedImage deviceImg = null;
-
+                    String baseKey = "";
+                    String cookingKey = "";
+                    
                     if (device instanceof BoilingPot) {
-                        deviceImg = assetMap.get("Boiling Pot"); 
+                        baseKey = "Boiling Pot";
+                        cookingKey = "Boiling Pot Cooking";
                     }
                     else if (device instanceof FryingPan) {
-                        deviceImg = assetMap.get("Frying Pan");
+                        baseKey = "Frying Pan";
+                        cookingKey = "Frying Pan Cooking";
                     }
+                    
+                    if (device.isCooking()) {
+                        deviceImg = assetMap.get(cookingKey);
+                    }
+
+                    if (deviceImg == null) {
+                        deviceImg = assetMap.get(baseKey);
+                    }
+
                     if (deviceImg != null) {
                         g.drawImage(deviceImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
                     }
@@ -339,11 +359,18 @@ public class GamePanel extends JPanel {
                 if (cut.getCurrentItem() != null) drawItem(g, cut.getCurrentItem(), sx+10, sy+10, 44);
                 if (cut.getProgress() > 0) drawProgressBar(g, sx, sy, cut.getProgress(), 100);
             }
-            else if (station instanceof AssemblyStation) {
-                g.setColor(new Color(222, 184, 135)); 
-                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
-                g.setColor(Color.BLACK); g.drawString("TABLE", sx+10, sy+20);
-                if (((AssemblyStation)station).getItem() != null) drawItem(g, ((AssemblyStation)station).getItem(), sx+10, sy+10, 44);
+            else if (station instanceof AssemblyStation) {   
+                BufferedImage tableImg = assetMap.get("Assembly Table");
+                if (tableImg != null) {
+                    g.drawImage(tableImg, sx, sy, TILE_SIZE, TILE_SIZE, null); 
+                } else {
+                    g.setColor(new Color(222, 184, 135)); 
+                    g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                    g.setColor(Color.BLACK); g.drawString("TABLE", sx+10, sy+20);
+                }
+                
+                AssemblyStation assembly = (AssemblyStation) station;
+                if (assembly.getItem() != null) drawItem(g, assembly.getItem(), sx+10, sy+10, 44);
             }
             else if (station instanceof PlateStorage) {
                 g.setColor(Color.DARK_GRAY);
@@ -384,14 +411,27 @@ public class GamePanel extends JPanel {
                 
             }
             else if (station instanceof ServingCounter) {
-                g.setColor(Color.MAGENTA);
-                g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
-                g.setColor(Color.WHITE); g.drawString("SERVE", sx+10, sy+35);
+                BufferedImage serveImg = assetMap.get("Serving Counter");
+                
+                if (serveImg != null) {
+                    g.drawImage(serveImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+                } else {
+                    g.setColor(Color.MAGENTA);
+                    g.fillRect(sx+2, sy+2, TILE_SIZE-4, TILE_SIZE-4);
+                }
+                
+                g.setColor(Color.WHITE); 
+                g.drawString("SERVE", sx+10, sy+35);
             }
             else if (station instanceof Wall) {
-                g.setColor(Color.BLACK);
-                g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
-                g.setColor(Color.WHITE); g.drawString("WALL", sx+20, sy+35);
+                BufferedImage wallImg = assetMap.get("Wall Brick");
+                if (wallImg != null) {
+                    g.drawImage(wallImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+                } else {
+                    g.setColor(Color.BLACK);
+                    g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
+                    g.setColor(Color.WHITE); g.drawString("WALL", sx+20, sy+35);
+                }
             }
             else {
                 g.setColor(Color.DARK_GRAY);
