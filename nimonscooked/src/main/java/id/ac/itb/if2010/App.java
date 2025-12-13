@@ -160,13 +160,15 @@ public class App {
                 
                 int score = map.getOrderManager().getScore();
                 int failed = map.getOrderManager().getFailedOrders();
+                int success = map.getOrderManager().getSuccessfulOrders();
+                int wrong = map.getOrderManager().getWrongOrders();
                 
                 if (failed >= 5) {
                     isGameOver = true;
                     gameTimer.stop();
                     
                     JOptionPane.showMessageDialog(window, 
-                        "GAME OVER! Too many failed orders.\nFinal Score: " + score);
+                        "GAME OVER! Too many failed orders.\nFinal Score: " + score + "\nSuccessful Orders: " + success + "\nFailed (Late) Orders: " + failed + "\nWrong Orders: " + wrong);
                     
                     window.dispose();
                     new MainMenu().setVisible(true);
@@ -176,7 +178,7 @@ public class App {
                     gameTimer.stop();
                     
                     JOptionPane.showMessageDialog(window, 
-                        "VICTORY! Target Score Reached!\nFinal Score: " + score);
+                        "VICTORY! Target Score Reached!\nFinal Score: " + score + "\nSuccessful Orders: " + success + "\nFailed (Late) Orders: " + failed + "\nWrong Orders: " + wrong);
                     
                     window.dispose();
                     new MainMenu().setVisible(true);
