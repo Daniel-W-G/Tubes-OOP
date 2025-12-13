@@ -79,11 +79,20 @@ public class App {
             }
         });
 
-        window.addKeyListener(new KeyAdapter() {
+        window.addKeyListener(new java.awt.event.KeyAdapter() {
+            private boolean shiftPressed = false;
+            private boolean spacePressed = false;
+
             @Override
             public void keyPressed(KeyEvent e) {
                 if (isGameOver) return;
-                
+
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftPressed = true;
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    spacePressed = true;
+                    e.consume();
+                }
+
                 String key = KeyEvent.getKeyText(e.getKeyCode()).toLowerCase();
                 
                 if (key.equals("escape")) {
@@ -110,6 +119,22 @@ public class App {
                 if (key.equals("d")) dir = Direction.RIGHT;
                 
                 if (dir != null) {
+                    // THROW (SPACE + direction)
+                    if (spacePressed) {
+                        Item thrown = activeChef.throwItem(dir, map);
+                        if (thrown != null) map.addThrownItem(thrown);
+                        gamePanel.repaint();
+                        return;
+                    }
+
+                    // DASH (SHIFT + direction)
+                    if (shiftPressed) {
+                        activeChef.dash(dir, map, chefs);
+                        gamePanel.repaint();
+                        return;
+                    }
+
+                    // normal move
                     int nextX = activeChef.getPosition().getX();
                     int nextY = activeChef.getPosition().getY();
                     if (dir == Direction.UP) nextY--;
@@ -120,21 +145,25 @@ public class App {
                     if (map.isValidPosition(nextX, nextY)) {
                         Station s = map.getStationAt(nextX, nextY);
                         boolean hitOtherChef = false;
-                        for(ChefPlayer other : chefs) {
+                        for (ChefPlayer other : chefs) {
                             if (other != activeChef && other.getPosition().getX() == nextX && other.getPosition().getY() == nextY) {
-                                hitOtherChef = true;
-                                break;
+                                hitOtherChef = true; break;
                             }
                         }
 
                         if (s == null && !hitOtherChef) {
                             activeChef.move(dir);
+                            // pickup thrown items automatically
+                            Item pick = map.tryPickupThrownItem(activeChef);
+                            if (pick != null) activeChef.setInventory(pick);
                         } else {
                             activeChef.setDirection(dir);
                         }
                     } else {
                         activeChef.setDirection(dir);
                     }
+                    gamePanel.repaint();
+                    return;
                 }
 
                 if (key.equals("e")) {
@@ -151,6 +180,12 @@ public class App {
                 }
                 
                 gamePanel.repaint();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftPressed = false;
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) spacePressed = false;
             }
         });
 

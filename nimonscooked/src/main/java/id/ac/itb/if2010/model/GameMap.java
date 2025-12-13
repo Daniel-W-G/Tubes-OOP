@@ -9,10 +9,12 @@ public class GameMap {
     private Station[][] grid;
     private List<ChefPlayer> chefs;
     private OrderManager orderManager;
+    private List<Item> thrownItems;
 
     public GameMap() {
         this.grid = new Station[rows][cols];
         this.chefs = new ArrayList<>();
+        this.thrownItems = new ArrayList<>();
         
         this.orderManager = new OrderManager(RecipeBook.getAllRecipes());
         
@@ -111,4 +113,29 @@ public class GameMap {
     public List<ChefPlayer> getChefs() { return chefs; }
     public int getRows() { return rows; }
     public int getCols() { return cols; }
+
+    public void addThrownItem(Item item) {
+        if (item != null) thrownItems.add(item);
+    }
+
+    public Item getThrownItemAt(int x, int y) {
+        for (Item it : thrownItems) {
+            if (it.getPosition() != null && it.getPosition().getX() == x && it.getPosition().getY() == y) {
+                return it;
+            }
+        }
+        return null;
+    }
+
+    public Item tryPickupThrownItem(ChefPlayer chef) {
+        Item it = getThrownItemAt(chef.getPosition().getX(), chef.getPosition().getY());
+        if (it != null) {
+            thrownItems.remove(it);
+        }
+        return it;
+    }
+
+    public java.util.List<Item> getThrownItems() {
+        return thrownItems;
+    }
 }
