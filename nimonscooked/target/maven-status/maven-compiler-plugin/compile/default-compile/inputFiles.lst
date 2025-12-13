@@ -1,33 +1,33 @@
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\AssemblyStation.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Plate.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\PlateStorage.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\view\GamePanel.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\ChefAction.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\FryingPan.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Wall.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\WashingStation.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\CuttingStation.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\App.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Recipe.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\view\MainMenu.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Oven.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\BoilingPot.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Order.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\OrderManager.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Position.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\view\LevelSelector.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Direction.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Item.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Ingredient.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\ServingCounter.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\IngredientState.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\ChefPlayer.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\KitchenUtensil.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\CookingDevice.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\IngredientStorage.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\TrashStation.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Preparable.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\GameMap.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\Station.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\RecipeBook.java
-D:\Sekolah\Tahun 2\Semester 3\Tubes-OOP\nimonscooked\src\main\java\id\ac\itb\if2010\model\CookingStation.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Oven.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/ChefPlayer.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/PlateStorage.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Station.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/AssemblyStation.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/IngredientStorage.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/FryingPan.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/ServingCounter.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Position.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Plate.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/view/LevelSelector.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/App.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/CookingStation.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/IngredientState.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Recipe.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Ingredient.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/CuttingStation.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/KitchenUtensil.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/view/MainMenu.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/view/GamePanel.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/ChefAction.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/TrashStation.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/CookingDevice.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/GameMap.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Preparable.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/OrderManager.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/WashingStation.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Order.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Item.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/RecipeBook.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Wall.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/BoilingPot.java
+/Users/kezia/oop/Tubes-OOP/nimonscooked/src/main/java/id/ac/itb/if2010/model/Direction.java
