@@ -34,9 +34,19 @@ public class ServingCounter extends Station {
             chef.setInventory(null);
 
             if (linkedStorage != null) {
-                linkedStorage.addDirtyPlate();
-                linkedStorage.reduceCleanPlate();
-                System.out.println("Served " + dishName + "! Plate returned to storage (Dirty)."); 
+                          
+                new Thread(() -> {
+                    try {
+                        linkedStorage.reduceCleanPlate();
+                        Thread.sleep(10000); 
+                        linkedStorage.addDirtyPlate();
+                        System.out.println("Plate returned to storage after 10 seconds!");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+                
+                System.out.println("Served " + dishName + "! Plate will return in 10 seconds."); 
             }
             
         } else {
