@@ -77,6 +77,16 @@ public class GamePanel extends JPanel {
             assetMap.put("Serving Counter", loadImage("serving counter.png"));
 
             assetMap.put("Menu Background", loadImage("sushimate cover.png"));
+
+            assetMap.put("Chef 1_UP",    loadImage("chef 1 blkg.png"));
+            assetMap.put("Chef 1_DOWN",  loadImage("chef 1 dpn.png"));
+            assetMap.put("Chef 1_LEFT",  loadImage("chef 1 kiri.png"));
+            assetMap.put("Chef 1_RIGHT", loadImage("chef 1 kanan.png"));
+
+            assetMap.put("Chef 2_UP",    loadImage("chef 2 blkg.png"));
+            assetMap.put("Chef 2_DOWN",  loadImage("chef 2 dpn.png"));
+            assetMap.put("Chef 2_LEFT",  loadImage("chef 2 kiri.png"));
+            assetMap.put("Chef 2_RIGHT", loadImage("chef 2 kanan.png"));
             
         } catch (Exception e) {
             System.out.println("Failed to load image: " + e.getMessage());
@@ -465,14 +475,24 @@ public class GamePanel extends JPanel {
         
         if (isActive) {
             g.setColor(Color.YELLOW);
-            int[] xPoints = {x + 32, x + 22, x + 42}; int[] yPoints = {y - 5, y - 15, y - 15};
+            int[] xPoints = {x + 32, x + 22, x + 42}; 
+            int[] yPoints = {y - 5, y - 15, y - 15};
             g.fillPolygon(xPoints, yPoints, 3);
         }
         
-        g.setColor(isActive ? Color.BLUE : Color.GRAY); 
-        g.fillOval(x + 10, y + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+        String key = chef.getName() + "_" + chef.getDirection();
+        BufferedImage chefImg = assetMap.get(key);
         
-        if (chef.isBusy()) { g.setColor(Color.RED); g.drawOval(x + 8, y + 8, TILE_SIZE - 16, TILE_SIZE - 16); }
+        if (chefImg != null) {
+            g.drawImage(chefImg, x, y, TILE_SIZE, TILE_SIZE, null);
+        } else {
+            g.setColor(isActive ? Color.BLUE : Color.GRAY); 
+            g.fillOval(x + 10, y + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+            if (chef.isBusy()) { 
+                g.setColor(Color.RED); 
+                g.drawOval(x + 8, y + 8, TILE_SIZE - 16, TILE_SIZE - 16); 
+            }
+        }
         
         if (chef.getInventory() != null) {
             drawItem(g, chef.getInventory(), x + 30, y + 30, 30);

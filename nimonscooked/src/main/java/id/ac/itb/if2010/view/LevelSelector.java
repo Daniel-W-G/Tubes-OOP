@@ -23,7 +23,7 @@ public class LevelSelector extends JFrame {
         try {
             tempImage = ImageIO.read(getClass().getResourceAsStream("/assets/level select bg.png"));
         } catch (Exception e) {
-            System.err.println("Gagal memuat background: " + e.getMessage());
+            System.err.println("Failed to load background image: " + e.getMessage());
         }
         final BufferedImage bgImage = tempImage;
 
@@ -54,7 +54,7 @@ public class LevelSelector extends JFrame {
 
         JLabel headerLabel = new JLabel("SELECT LEVEL");
         headerLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        headerLabel.setForeground(Color.BLACK);
+        headerLabel.setForeground(Color.WHITE);
         headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel lvlPanel = new JPanel();

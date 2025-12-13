@@ -5,7 +5,6 @@ import java.awt.*;
 import id.ac.itb.if2010.App;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class MainMenu extends JFrame {
 

@@ -119,7 +119,6 @@ public class App {
                 if (key.equals("d")) dir = Direction.RIGHT;
                 
                 if (dir != null) {
-                    // THROW (SPACE + direction)
                     if (spacePressed) {
                         Item thrown = activeChef.throwItem(dir, map);
                         if (thrown != null) map.addThrownItem(thrown);
@@ -127,14 +126,12 @@ public class App {
                         return;
                     }
 
-                    // DASH (SHIFT + direction)
                     if (shiftPressed) {
                         activeChef.dash(dir, map, chefs);
                         gamePanel.repaint();
                         return;
                     }
 
-                    // normal move
                     int nextX = activeChef.getPosition().getX();
                     int nextY = activeChef.getPosition().getY();
                     if (dir == Direction.UP) nextY--;
@@ -153,7 +150,6 @@ public class App {
 
                         if (s == null && !hitOtherChef) {
                             activeChef.move(dir);
-                            // pickup thrown items automatically
                             Item pick = map.tryPickupThrownItem(activeChef);
                             if (pick != null) activeChef.setInventory(pick);
                         } else {
