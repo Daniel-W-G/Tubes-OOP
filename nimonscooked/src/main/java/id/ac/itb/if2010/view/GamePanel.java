@@ -278,6 +278,9 @@ public class GamePanel extends JPanel {
                     f.setAccessible(true);
                     label = (String) f.get(station);
                 } catch (Exception e) { }
+                
+                BufferedImage ingImg = assetMap.get(label);
+                g.drawImage(ingImg, sx+10, sy+10, 44, 44, null);
                 g.drawString(label.toUpperCase(), sx+5, sy+35);
                 
                 if (((IngredientStorage)station).getItemOnTop() != null) {
