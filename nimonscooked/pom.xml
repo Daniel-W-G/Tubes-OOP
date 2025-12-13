@@ -51,6 +51,13 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>id.ac.itb.if2010.App</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
@@ -59,6 +66,68 @@
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.4.1</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+                <transformers>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                    <mainClass>id.ac.itb.if2010.App</mainClass>
+                  </transformer>
+                </transformers>
+                <finalName>nimonscooked</finalName>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>net.sf.launch4j</groupId>
+          <artifactId>launch4j-maven-plugin</artifactId>
+          <version>2.1.3</version>
+          <executions>
+            <execution>
+              <id>l4j-clui</id>
+              <phase>package</phase>
+              <goals>
+                <goal>launch4j</goal>
+              </goals>
+              <configuration>
+                <headerType>gui</headerType>
+                <jar>target/nimonscooked.jar</jar>
+                <outfile>target/SUSHIMATE.exe</outfile>
+                <downloadUrl>https://adoptium.net/temurin/releases/</downloadUrl>
+                <supportUrl></supportUrl>
+                <classPath>
+                  <mainClass>id.ac.itb.if2010.App</mainClass>
+                </classPath>
+                <jre>
+                  <minVersion>17.0.0</minVersion>
+                  <jdkPreference>preferJdk</jdkPreference>
+                </jre>
+                <versionInfo>
+                  <fileVersion>1.0.0.0</fileVersion>
+                  <txtFileVersion>1.0.0.0</txtFileVersion>
+                  <productVersion>1.0.0.0</productVersion>
+                  <txtProductVersion>1.0.0.0</txtProductVersion>
+                  <companyName>Tubes-OOP</companyName>
+                  <fileDescription>SUSHIMATE - Cooking Game</fileDescription>
+                  <internalName>SUSHIMATE</internalName>
+                  <legalCopyright>2025</legalCopyright>
+                  <originalFilename>SUSHIMATE.exe</originalFilename>
+                  <productName>SUSHIMATE</productName>
+                </versionInfo>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
         <plugin>
