@@ -8,10 +8,12 @@ id\ac\itb\if2010\model\WashingStation.class
 id\ac\itb\if2010\model\BoilingPot.class
 id\ac\itb\if2010\view\MainMenu.class
 id\ac\itb\if2010\model\Position.class
+id\ac\itb\if2010\view\MainMenu$2.class
 id\ac\itb\if2010\model\ChefPlayer.class
 id\ac\itb\if2010\model\Ingredient.class
 id\ac\itb\if2010\model\PlateStorage.class
 id\ac\itb\if2010\model\OrderManager.class
+id\ac\itb\if2010\view\LevelSelector$2.class
 id\ac\itb\if2010\model\Item.class
 id\ac\itb\if2010\App$3.class
 id\ac\itb\if2010\model\AssemblyStation.class
@@ -19,6 +21,7 @@ id\ac\itb\if2010\model\KitchenUtensil.class
 id\ac\itb\if2010\model\Preparable.class
 id\ac\itb\if2010\view\LevelSelector.class
 id\ac\itb\if2010\App$1.class
+id\ac\itb\if2010\view\MainMenu$3.class
 id\ac\itb\if2010\model\Order.class
 id\ac\itb\if2010\model\CookingStation.class
 id\ac\itb\if2010\view\GamePanel.class
