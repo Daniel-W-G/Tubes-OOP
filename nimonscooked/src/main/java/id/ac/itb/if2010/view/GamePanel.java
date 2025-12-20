@@ -102,6 +102,7 @@ public class GamePanel extends JPanel {
             assetMap.put("Cutting Board Station", loadImage("cutting board.png"));
 
             assetMap.put("Wall Brick", loadImage("wall.png")); 
+            assetMap.put("Floor", loadImage("floor.png"));
             assetMap.put("Assembly Table", loadImage("table2.png"));
             assetMap.put("Cooking Station", loadImage("cooking station.png"));
             assetMap.put("Serving Counter", loadImage("serving counter.png"));
@@ -316,15 +317,15 @@ public class GamePanel extends JPanel {
     private void drawTile(Graphics g, int x, int y) {
         int sx = x * TILE_SIZE;
         int sy = y * TILE_SIZE + MAP_OFFSET_Y;
+        BufferedImage floorImg = assetMap.get("Floor");
 
-        Color color1 = new Color(233, 233, 233);
-        Color color2 = new Color(144, 142, 140);
-        
-        Color baseColor = ((x + y) % 2 == 0) ? color1 : color2;
-
-        g.setColor(baseColor);
-        g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
-        g.setColor(new Color(190, 190, 190));
+        if (floorImg != null) {
+            g.drawImage(floorImg, sx, sy, TILE_SIZE, TILE_SIZE, null);
+        } else {
+            g.setColor(Color.MAGENTA);
+            g.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
+        }
+        g.setColor(new Color(46, 28, 4)); 
         g.drawRect(sx, sy, TILE_SIZE, TILE_SIZE);
 
         Station station = map.getStationAt(x, y);
