@@ -70,11 +70,11 @@ public class GamePanel extends JPanel {
     
     private void loadAssets() {
         try {
-            assetMap.put("Fish", loadImage("fish.png"));
-            assetMap.put("Rice", loadImage("rice.png"));
-            assetMap.put("Shrimp", loadImage("shrimp.png"));
-            assetMap.put("Nori", loadImage("nori.png"));
-            assetMap.put("Cucumber", loadImage("cucumber.png"));
+            assetMap.put("Fish", loadImage("Fish.png"));
+            assetMap.put("Rice", loadImage("Rice.png"));
+            assetMap.put("Shrimp", loadImage("Shrimp.png"));
+            assetMap.put("Nori", loadImage("Nori.png"));
+            assetMap.put("Cucumber", loadImage("Cucumber.png"));
             
             assetMap.put("Chopped Fish", loadImage("chopped fish.png"));
             assetMap.put("Chopped Shrimp", loadImage("chopped shrimp.png"));
